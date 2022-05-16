@@ -1,0 +1,99 @@
+---
+title: "The Tidyverse"
+output:
+  html_document:
+    df_print: paged
+    css: "style.css"
+---
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+----
+
+##
+<div class="objectives">
+<h2><i class="far fa-check-square"></i> Learning Objectives</h2>
+ * Understand the philosophy of Tidy Data
+ * Get to know some of the Tidyverse packages
+</div>
+<br>
+
+The **`tidyverse`** is a suite of packages that includes libraries such as **`dplyr`** and **`ggplot2`**. These packages are designed for data science and share underlying principles, grammar and data structures. There are many ways to do the same thing in R, but following the philosophy of *tidy data* and using the **`tidyverse`** packages will keep your datasets organised and make analysis easier in the long run. 
+
+<br>
+
+## Tidy data
+***
+
+Data can be represented in many different ways across multiple tables but the tidyverse packages are specifically designed to work with **tidy** datasets. Tidy data conforms to the following criteria:
+
+* Each variable has its own column
+* Each row is a single observation
+* Each value has its own cell
+
+![](images/tidy.png)
+
+This is the optimal structure when working in R and provides consistency amongst your datasets. Getting your data into R and wrangling it into the correct format is always the first step in your analysis. Fortunately, the **`tidyr`** package contains many functions to *tidy* up your dataset.
+
+We will start by reading in a dataset. The **`readr`** package has functions for importing data as **tibbles**. Tibbles are the tidyverse compatible version of an R dataframe. They have stricter formatting and allow you to perform grouping of variables as we will see in the next section.
+
+```{r, results='hide'}
+library(tidyverse)
+
+#If you already have the data installed on your computer you can read from a file:
+surveys <- read_csv("data/surveys_complete.csv")
+```
+
+```{r, results = 'hide'}
+#Otherwise you can read from a URL
+surveys <- read_csv("http://bifx-core.bio.ed.ac.uk/training/R_dplyr_and_ggplot2/data/surveys_complete.csv")
+```
+
+<br>
+<div class="discussion">
+<h2><i class="far fa-bell"></i> Discussion</h2>
+* Look at the options available in the `read_csv` and compare this with the `read.table` function we saw earlier.
+* What other `readr` functions can you find?
+</div>
+<br>
+
+This dataset contains observations from a field survey of different organisms at different sites (plots). Let's inspect the data.
+
+```{r}
+#Type an R objects name to print the contents
+surveys
+```
+
+```{r, eval=F}
+#Use the View function
+View(surveys)
+```
+
+```{r}
+#We can look at the structure of the dataset
+str(surveys)
+```
+
+<br>
+<div class="resources">
+<h2><i class="fas fa-book"></i> Further Resources</h2>
+* There are [cheatsheets](https://rstudio.com/resources/cheatsheets/) available for many tidyverse and rstudio packages that will help you to choose the correct functions.
+* Take a look at these [slides](https://drive.google.com/open?id=181oNGmKKxyx3XUDvYFgxtGj4aQjCguW0LRb3r0UIviM) or [www.tidyverse.org](www.tidyverse.org) for more information on the tidyverse.
+</div>
+<br>
+
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i> Key points</h2>
+##
+ * The tidyverse is a suite of R packages
+ * Stick to the principles and philosophy of tidy data
+ * Use the `readr` package to import data as tibbles 
+ * Use further tidyverse packages to tidy, re-format and visualise data
+</div>
+<br>

@@ -1,0 +1,21 @@
+---
+title: "WCB R Training"
+author:  "WCB Bioinformatics Core Facility"
+output:
+  html_document:
+    fig_width: 1
+---
+
+----
+
+This is the homepage for R training at the WCB Bioinformatics Core Facility at the University of Edinburgh. These courses are run annually by a qualified tutor but also provided for self study.
+
+<br>
+
+![](images/CELL_BIOLOGY_RGB.png){ width=50% }
+
+<br>
+
+----
+
+For more information contact [Shaun Webb](mailto:shaun.webb@ed.ac.uk).
