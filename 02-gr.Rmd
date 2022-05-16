@@ -1,0 +1,205 @@
+---
+title: "Genomic Ranges"
+objectives:
+  - Import genome coordinate data as Genomic Ranges
+  - Perform operations on genomic regions
+output:
+  html_document:
+    df_print: paged
+    css: "style.css"
+---
+
+<head>
+
+```{=html}
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+```
+</head>
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+------------------------------------------------------------------------
+
+## 
+
+::: {.objectives}
+<h2>
+
+<i class="far fa-check-square"></i> Learning Objectives
+
+</h2>
+
+-   Learn to use the Genomic Ranges package in R
+-   Import genomic regions as GRanges objects
+-   Perform operations on GRanges objects
+:::
+
+<br>
+
+## GenomicRanges package
+
+------------------------------------------------------------------------
+
+Genomic annotations can be represented in R as *GRanges* objects:
+```{r message=FALSE, warning=FALSE}
+library(GenomicRanges)
+
+##Create a genomicRanges object from scratch
+gr<-GRanges(seqnames=c("chr2","chr2","chr6","chr6","chr10"),
+            ranges=IRanges(start=c(100,150,300,350,500),
+                           end=c(200,300,400,500,600)),
+            names=c(1,2,3,4,5))
+gr
+```
+
+```{r message=FALSE, warning=FALSE}
+##Create a second 
+gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
+            ranges = IRanges(start = sample(1000000,5) ,
+            width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))
+gr2
+```
+
+## 1.1 Perform operations on GenomicRanges
+
+The GenomicRanges packages has several functions to operate on a set or sets of GenomicRanges:
+```{r}
+##Get the promoter region around the start of the feature
+promoters(gr2,upstream = 1000,downstream=1000)
+```
+
+
+```{r}
+##Reduce overlapping ranges into a single range
+reduce(gr)
+```
+
+```{R}
+##Shift all the co-ordinates along
+gr.shift<-shift(gr,100)
+gr.shift
+```
+
+```{r}
+##Find the overlaps between 2 sets of GRanges
+findOverlaps(query = gr,subject = gr.shift)
+```
+
+```{r}
+##Merge the regions between 2 sets of GRanges
+union(gr.shift,gr)
+```
+
+```{r}
+##Get the overlapping regions between 2 sets of GRanges
+intersect(gr.shift,gr)
+```
+
+```{r}
+##What happens if we set all the shifted ranges to the minus strand?
+strand(gr.shift)="-"
+intersect(gr.shift,gr)
+```
+
+```{r}
+##strandedness is used in comparisons by default but we can turn this off:
+intersect(gr.shift,gr,ignore.strand=T)
+```
+
+## 1.2 We can store several GenomicRanges objects in a list
+
+```{r}
+##Create a GRanges list
+gl<-GRangesList(gr,gr2)
+gl
+```
+
+```{r}
+##We can perform operations on all items in the list
+promoters(gl)
+```
+
+## 1.3 Exercise
+
+There are many more functions in the [*Genomic Ranges*](https://bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.pdf) documentation as well as the [How To](http://bioconductor.org/packages/devel/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesHOWTOs.pdf) document.
+
+Read the documentation and see if you can figure out how to get the 1000 bases downstream of each of the ranges in gr2.
+
+```{r}
+###!!!!solution!!!###
+flank(gr2,1000,start=F)
+```
+
+# 2. Importing text files as Genomic Ranges
+
+The *genomation* package has several useful functions to import files into R as GRanges.
+
+```{r}
+library(genomation)
+##Read in a bed file, this file contains gene annotations downloaded from the Ensembl website
+hg19.genes<-readBed("/homes/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.strict.bed")
+##Inspect the object
+hg19.genes
+```
+
+Note that the GRanges object has a "slot" for seqinfo which can store the lengths of each chromosome and the genome they are derived from. Some functions make use of the seqinfo, for instance when calculating the complement of a GRanges object we need to know where the end of each chromosome is. This information is currently empty but we will see how to update it later.
+
+```{r}
+seqinfo(hg19.genes)
+```
+  
+We can also use *genomation* to read in files that are not in a standard format using the readGeneric() function.
+
+```{r}  
+##Let's update our hg19.genes object to include more information (metadata) about each gene
+##This file contains the same gene annotations but has some extra columns in the table which we can also import.
+hg19.genes<-readGeneric("/homes/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed",chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
+
+##The meta.cols paramater is a list of metadata column numbers and the names we want to give them.
+hg19.genes
+```
+
+We can use the metadata to filter our GRanges object using the subset() function.
+
+```{r}
+##Get all protein coding genes
+hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
+hg19.pc.genes
+```
+
+There are several other import functions in *genomation*:
+
+* readBam() ##Import sequencing alignments.
+* readNarrowPeak() and readBroadPeak() ##Import peak calling data from commonly used peak caller tools.
+* gffToGRanges() ##Import GFF files.
+* readTranscriptFeatures() ##Import a bed file and split it into promoter, exon and intron regions.
+* Many more...
+
+*genomation* also has several analysis functions:
+
+* Perform additional operations on GRanges objects
+* Annotate GRanges objects with other features
+* Extract and visualise data across GRanges
+* More...
+
+Take a look at the *genomation* [manual](https://bioconductor.org/packages/release/bioc/vignettes/genomation/inst/doc/GenomationManual.html) and [documentation](https://bioconductor.org/packages/release/bioc/manuals/genomation/man/genomation.pdf) to learn more.
+
+
+::: {.key-points}
+<h2>
+
+<i class="fas fa-thumbtack"></i> Key points
+
+</h2>
+
+## 
+
+-   R is a functional programming language
+-   RStudio is an interactive environment for programming in R
+-   Base R functions can be used to import, manipulate and plot data
+-   There are many functions for statistical analysis in R
+:::
+
+<br>

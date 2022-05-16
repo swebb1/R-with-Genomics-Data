@@ -4,14 +4,14 @@ navbar:
   left:
     - text: "Getting Started"
       href: 01-start.html
-    - text: "R and RStudio"
-      href: 02-IntroR.html
-    - text: "Tidyverse"
-      href: 03-tidyverse.html
-    - text: "Dplyr"
-      href: 04-dplyr.html
-    - text: "GGPlot2"
-      href: 05-ggplot.html
+    - text: "Genomic Ranges"
+      href: 02-gr.html
+    - text: "Reference data"
+      href: 03-databases.html
+    - text: "Annotating genomic regions"
+      href: 04-annotation.html
+    - text: "Plotting genomic data"
+      href: 05-plots.html
 output_dir: "."
 output:
   html_document:
