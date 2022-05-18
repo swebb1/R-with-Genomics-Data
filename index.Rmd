@@ -1,5 +1,5 @@
 ---
-title: "WCB R Training"
+title: "R with Genomics Data"
 author:  "WCB Bioinformatics Core Facility"
 output:
   html_document:
@@ -8,7 +8,7 @@ output:
 
 ----
 
-This is the homepage for R training at the WCB Bioinformatics Core Facility at the University of Edinburgh. These courses are run annually by a qualified tutor but also provided for self study.
+This is the homepage for the **R with genomics data** training course hosted by the WCB Bioinformatics Core Facility at the University of Edinburgh. This course is run annually by a qualified tutor but also provided for self study.
 
 <br>
 

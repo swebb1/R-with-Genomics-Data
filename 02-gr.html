@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Genomic Ranges</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="01-start.html">Getting Started</a>
+</li>
+<li>
+  <a href="02-gr.html">Genomic Ranges</a>
+</li>
+<li>
+  <a href="03-databases.html">Reference data</a>
+</li>
+<li>
+  <a href="04-annotation.html">Annotating genomic regions</a>
+</li>
+<li>
+  <a href="05-plots.html">Plotting genomic data</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Genomic Ranges</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<div id="section" class="section level2">
+<h2></h2>
+<div class="objectives">
+<h2>
+<p><i class="far fa-check-square"></i> Learning Objectives</p>
+</h2>
+<ul>
+<li>Learn to use the GenomicRanges package in R</li>
+<li>Import genomic regions as GRanges objects</li>
+<li>Perform operations on GRanges objects</li>
+</ul>
+</div>
+<p><br></p>
+</div>
+<div id="genomicranges" class="section level2">
+<h2>1. GenomicRanges</h2>
+<p>The <strong>GenomicRanges</strong> package defines general purpose containers, known as <em>GRanges</em> objects, for storing and manipulating genomic intervals and variables defined along a genome.</p>
+<p>Load the GenomicRanges library and use the <em>GRanges</em> function to generate a sample of genomic intervals. The <em>IRanges</em> function creates numeric intervals which are passed to GRanges and understood as genomic co-ordinates:</p>
+<pre class="r"><code>library(GenomicRanges)
+
+## Create a genomicRanges object from scratch
+gr&lt;-GRanges(seqnames=c(&quot;chr2&quot;,&quot;chr2&quot;,&quot;chr6&quot;,&quot;chr6&quot;,&quot;chr10&quot;),
+            ranges=IRanges(start=c(100,150,300,350,500),
+                           end=c(200,300,400,500,600)),
+            names=c(1,2,3,4,5))
+gr</code></pre>
+<pre><code>## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames    ranges strand |     names
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]     chr2   100-200      * |         1
+##   [2]     chr2   150-300      * |         2
+##   [3]     chr6   300-400      * |         3
+##   [4]     chr6   350-500      * |         4
+##   [5]    chr10   500-600      * |         5
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<p>We can use the <em>sample</em>, <em>rep</em> and <em>seq</em> functions to generate co-ordinates. Try playing around with these functions.</p>
+<pre class="r"><code>## Create a second 
+gr2&lt;-GRanges(seqnames = paste0(&quot;chr&quot;,seq(2,10,2)),
+            ranges = IRanges(start = sample(1000000,5) ,
+            width = rep(500,5)),strand = c(rep(&quot;+&quot;,3),rep(&quot;-&quot;,2)),names=seq(1,5))
+gr2</code></pre>
+<pre><code>## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames        ranges strand |     names
+##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
+##   [1]     chr2 900640-901139      + |         1
+##   [2]     chr4 573187-573686      + |         2
+##   [3]     chr6 466494-466993      + |         3
+##   [4]     chr8 640507-641006      - |         4
+##   [5]    chr10 892312-892811      - |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+<p>We can store several <em>GRanges</em> objects in a <em>GRangeslist</em>.</p>
+<p>For instance, say we had two sets of candidate genes from two different, but related experiments. We can place these together in a list and apply the same operations on both sets at the same time.</p>
+<pre class="r"><code>## Create a GRanges list
+gl&lt;-GRangesList(gr,gr2)
+gl</code></pre>
+<pre><code>## GRangesList object of length 2:
+## [[1]]
+## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames    ranges strand |     names
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]     chr2   100-200      * |         1
+##   [2]     chr2   150-300      * |         2
+##   [3]     chr6   300-400      * |         3
+##   [4]     chr6   350-500      * |         4
+##   [5]    chr10   500-600      * |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths
+## 
+## [[2]]
+## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames        ranges strand |     names
+##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]     chr2 900640-901139      + |         1
+##   [2]     chr4 573187-573686      + |         2
+##   [3]     chr6 466494-466993      + |         3
+##   [4]     chr8 640507-641006      - |         4
+##   [5]    chr10 892312-892811      - |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+<hr />
+</div>
+<div id="functions-to-access-granges-objects" class="section level2">
+<h2>1.1 Functions to access GRanges objects</h2>
+<p>The <em>GRanges</em> object has several <strong>accessor functions</strong> to quickly extract information about the data:</p>
+<pre class="r"><code>## Get the number of intervals in a GRanges object
+length(gr)</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>## Get the number of intervals in a GRanges object
+length(gr)</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>## Get the names of sequences (e.g. chromosomes) represented in the GRanges object
+seqnames(gr)</code></pre>
+<pre><code>## factor-Rle of length 5 with 3 runs
+##   Lengths:     2     2     1
+##   Values : chr2  chr6  chr10
+## Levels(3): chr2 chr6 chr10</code></pre>
+<pre class="r"><code>## Get the start and end positions or the strand
+start(gr2)</code></pre>
+<pre><code>## [1] 900640 573187 466494 640507 892312</code></pre>
+<pre class="r"><code>end(gr2)</code></pre>
+<pre><code>## [1] 901139 573686 466993 641006 892811</code></pre>
+<pre class="r"><code>strand(gr2)</code></pre>
+<pre><code>## factor-Rle of length 5 with 2 runs
+##   Lengths: 3 2
+##   Values : + -
+## Levels(3): + - *</code></pre>
+<pre class="r"><code>## Get the length of each genomic interval
+width(gr)</code></pre>
+<pre><code>## [1] 101 151 101 151 101</code></pre>
+<p>The <em>GRanges</em> object also contains metadata columns with additional information about each genomic interval. We can assign and retrieve metadata with the <em>mcols</em> function.</p>
+<pre class="r"><code>## Create a new metadata column to represent GC content
+mcols(gr)$GC&lt;-seq(1,0,length=length(gr))
+## Fetch the metadata columns as a DataFrame
+mcols(gr)</code></pre>
+<pre><code>## DataFrame with 5 rows and 2 columns
+##       names        GC
+##   &lt;numeric&gt; &lt;numeric&gt;
+## 1         1      1.00
+## 2         2      0.75
+## 3         3      0.50
+## 4         4      0.25
+## 5         5      0.00</code></pre>
+<hr />
+</div>
+<div id="perform-vector-operations-on-granges-objects" class="section level2">
+<h2>1.2 Perform vector operations on GRanges objects</h2>
+<p><em>GRanges</em> objects work like a lot of other vector objects in R. This means you can use many of the base R functions to subset, combine, sort and compare <em>GRanges</em>.</p>
+<pre class="r"><code>## Select specific GRanges
+gr3&lt;-gr[c(5,4,3)]
+gr3</code></pre>
+<pre><code>## GRanges object with 3 ranges and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]    chr10   500-600      * |         5      0.00
+##   [2]     chr6   350-500      * |         4      0.25
+##   [3]     chr6   300-400      * |         3      0.50
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Sort a Granges object
+sort(gr3)</code></pre>
+<pre><code>## GRanges object with 3 ranges and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr6   300-400      * |         3      0.50
+##   [2]     chr6   350-500      * |         4      0.25
+##   [3]    chr10   500-600      * |         5      0.00
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Concatenate two GRanges
+c(gr,gr2)</code></pre>
+<pre><code>## GRanges object with 10 ranges and 2 metadata columns:
+##        seqnames        ranges strand |     names        GC
+##           &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##    [1]     chr2       100-200      * |         1      1.00
+##    [2]     chr2       150-300      * |         2      0.75
+##    [3]     chr6       300-400      * |         3      0.50
+##    [4]     chr6       350-500      * |         4      0.25
+##    [5]    chr10       500-600      * |         5      0.00
+##    [6]     chr2 900640-901139      + |         1        NA
+##    [7]     chr4 573187-573686      + |         2        NA
+##    [8]     chr6 466494-466993      + |         3        NA
+##    [9]     chr8 640507-641006      - |         4        NA
+##   [10]    chr10 892312-892811      - |         5        NA
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Subset a GRanges object
+subset(gr2,strand(gr2)==&quot;-&quot;)</code></pre>
+<pre><code>## GRanges object with 2 ranges and 1 metadata column:
+##       seqnames        ranges strand |     names
+##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
+##   [1]     chr8 640507-641006      - |         4
+##   [2]    chr10 892312-892811      - |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Split GRanges into a GRangesList
+split(gr,seqnames(gr))</code></pre>
+<pre><code>## GRangesList object of length 3:
+## $chr2
+## GRanges object with 2 ranges and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr2   100-200      * |         1      1.00
+##   [2]     chr2   150-300      * |         2      0.75
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths
+## 
+## $chr6
+## GRanges object with 2 ranges and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr6   300-400      * |         3      0.50
+##   [2]     chr6   350-500      * |         4      0.25
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths
+## 
+## $chr10
+## GRanges object with 1 range and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]    chr10   500-600      * |         5         0
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<p><br></p>
+<div class="challenge">
+<h2>
+<p><i class="fas fa-pencil-alt"></i> Challenge:</p>
+</h2>
+<p>1.Extract the GRanges in gr with &gt;=0.5 GC content and split them into a list for each chromosome.</p>
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<p><i class="far fa-eye"></i> Solution:</p>
+</h2>
+<pre class="r"><code>gr_subset=subset(gr,mcols(gr)$GC&gt;=0.5)
+split(gr_subset,seqlevels(gr_subset))</code></pre>
+<pre><code>## GRangesList object of length 3:
+## $chr10
+## GRanges object with 1 range and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr6   300-400      * |         3       0.5
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths
+## 
+## $chr2
+## GRanges object with 1 range and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr2   100-200      * |         1         1
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths
+## 
+## $chr6
+## GRanges object with 1 range and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr2   150-300      * |         2      0.75
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+</div>
+</details>
+<p>2.Concatenate the GRanges in gr and gr2 and extract the intervals on chr2.</p>
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<p><i class="far fa-eye"></i> Solution:</p>
+</h2>
+<pre class="r"><code>grc&lt;-c(gr,gr2)
+subset(grc,seqnames(grc)==&quot;chr2&quot;)</code></pre>
+<pre><code>## GRanges object with 3 ranges and 2 metadata columns:
+##       seqnames        ranges strand |     names        GC
+##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr2       100-200      * |         1      1.00
+##   [2]     chr2       150-300      * |         2      0.75
+##   [3]     chr2 900640-901139      + |         1        NA
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+</div>
+</details>
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="perform-range-based-operations-on-granges-objects" class="section level2">
+<h2>1.3 Perform range based operations on <em>GRanges</em> objects</h2>
+<p><img src="images/GR.png" style="width:50.0%" /></p>
+<p>The GenomicRanges package also has several useful functions to perform operations on <em>GRanges</em> objects based on the genomic intervals.</p>
+<pre class="r"><code>## Get the promoter region around the start of the feature
+promoters(gr2,upstream = 1000,downstream=1000)</code></pre>
+<pre><code>## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames        ranges strand |     names
+##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
+##   [1]     chr2 899640-901639      + |         1
+##   [2]     chr4 572187-574186      + |         2
+##   [3]     chr6 465494-467493      + |         3
+##   [4]     chr8 640007-642006      - |         4
+##   [5]    chr10 891812-893811      - |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Reduce overlapping ranges into a single range
+reduce(gr)</code></pre>
+<pre><code>## GRanges object with 3 ranges and 0 metadata columns:
+##       seqnames    ranges strand
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;
+##   [1]     chr2   100-300      *
+##   [2]     chr6   300-500      *
+##   [3]    chr10   500-600      *
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Shift all the co-ordinates along
+gr.shift&lt;-shift(gr,100)
+gr.shift</code></pre>
+<pre><code>## GRanges object with 5 ranges and 2 metadata columns:
+##       seqnames    ranges strand |     names        GC
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
+##   [1]     chr2   200-300      * |         1      1.00
+##   [2]     chr2   250-400      * |         2      0.75
+##   [3]     chr6   400-500      * |         3      0.50
+##   [4]     chr6   450-600      * |         4      0.25
+##   [5]    chr10   600-700      * |         5      0.00
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Find the overlaps between 2 sets of GRanges
+fo&lt;-findOverlaps(query = gr,subject = gr.shift)
+fo</code></pre>
+<pre><code>## Hits object with 7 hits and 0 metadata columns:
+##       queryHits subjectHits
+##       &lt;integer&gt;   &lt;integer&gt;
+##   [1]         1           1
+##   [2]         2           1
+##   [3]         2           2
+##   [4]         3           3
+##   [5]         4           3
+##   [6]         4           4
+##   [7]         5           5
+##   -------
+##   queryLength: 5 / subjectLength: 5</code></pre>
+<pre class="r"><code>## Use the subjectHits or queryHits functions to extract columns from the output
+subjectHits(fo)</code></pre>
+<pre><code>## [1] 1 1 2 3 3 4 5</code></pre>
+<pre class="r"><code>## Merge the regions between 2 sets of GRanges
+union(gr.shift,gr)</code></pre>
+<pre><code>## GRanges object with 3 ranges and 0 metadata columns:
+##       seqnames    ranges strand
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;
+##   [1]     chr2   100-400      *
+##   [2]     chr6   300-600      *
+##   [3]    chr10   500-700      *
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Get the overlapping regions between 2 sets of GRanges
+intersect(gr.shift,gr)</code></pre>
+<pre><code>## GRanges object with 3 ranges and 0 metadata columns:
+##       seqnames    ranges strand
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;
+##   [1]     chr2   200-300      *
+##   [2]     chr6   400-500      *
+##   [3]    chr10       600      *
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## What happens if we set all the shifted ranges to the minus strand?
+strand(gr.shift)=&quot;-&quot;
+intersect(gr.shift,gr)</code></pre>
+<pre><code>## GRanges object with 0 ranges and 0 metadata columns:
+##    seqnames    ranges strand
+##       &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code>## Strandedness is used in comparisons by default but we can turn this off:
+intersect(gr.shift,gr,ignore.strand=T)</code></pre>
+<pre><code>## GRanges object with 3 ranges and 0 metadata columns:
+##       seqnames    ranges strand
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;
+##   [1]     chr2   200-300      *
+##   [2]     chr6   400-500      *
+##   [3]    chr10       600      *
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths</code></pre>
+<p>We can also perform operations on all of the <em>GRanges</em> in a <em>GRangesList</em> object:</p>
+<pre class="r"><code>## We can perform operations on all items in the list
+promoters(gl)</code></pre>
+<pre><code>## GRangesList object of length 2:
+## [[1]]
+## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames    ranges strand |     names
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]     chr2 -1900-299      * |         1
+##   [2]     chr2 -1850-349      * |         2
+##   [3]     chr6 -1700-499      * |         3
+##   [4]     chr6 -1650-549      * |         4
+##   [5]    chr10 -1500-699      * |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths
+## 
+## [[2]]
+## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames        ranges strand |     names
+##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]     chr2 898640-900839      + |         1
+##   [2]     chr4 571187-573386      + |         2
+##   [3]     chr6 464494-466693      + |         3
+##   [4]     chr8 640807-643006      - |         4
+##   [5]    chr10 892612-894811      - |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+<p><em>GRangesList</em> objects also work with base R list functions like <em>lapply</em> and <em>unlist</em> but we will not cover that here.</p>
+<p><br></p>
+<div class="challenge">
+<h2>
+<p><i class="fas fa-pencil-alt"></i> Challenge:</p>
+</h2>
+<p>1.There are many more functions in the <a href="https://bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.pdf"><em>Genomic Ranges</em></a> documentation as well as the <a href="http://bioconductor.org/packages/devel/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesHOWTOs.pdf">How To</a> document.</p>
+<p>Read the documentation and see if you can figure out how to get the 1000 bases downstream of each of the ranges in gr2.</p>
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<p><i class="far fa-eye"></i> Solution:</p>
+</h2>
+<pre class="r"><code>flank(gr2,1000,start=F)</code></pre>
+<pre><code>## GRanges object with 5 ranges and 1 metadata column:
+##       seqnames        ranges strand |     names
+##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
+##   [1]     chr2 901140-902139      + |         1
+##   [2]     chr4 573687-574686      + |         2
+##   [3]     chr6 466994-467993      + |         3
+##   [4]     chr8 639507-640506      - |         4
+##   [5]    chr10 891312-892311      - |         5
+##   -------
+##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
+</div>
+</details>
+<p>2.Create a new GRanges object called genes and find which genes overlap with the ranges in gr2.</p>
+<pre class="r"><code>genes&lt;-GRanges(seqnames=c(&quot;chr2&quot;,&quot;chr6&quot;,&quot;chr9&quot;),ranges = IRanges(start=c(623900,791900,881110),width=100),strand=&quot;+&quot;,name=c(&quot;geneA&quot;,&quot;geneB&quot;,&quot;geneC&quot;))</code></pre>
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<p><i class="far fa-eye"></i> Solution:</p>
+</h2>
+<pre class="r"><code>overlaps&lt;-findOverlaps(query = genes,subject=gr2)
+qh&lt;-queryHits(overlaps)
+qh&lt;-unique(qh) ## Not necessary here, but will prevent repeats if genes overlapped with more than one region
+genes[qh]$name</code></pre>
+<pre><code>## character(0)</code></pre>
+<p>Note that it is also possible to string together GRanges operations with R <em>pipes</em> e.g.</p>
+<pre class="r"><code>library(magrittr)
+qh&lt;-findOverlaps(query = genes,subject=gr2) %&gt;% queryHits() %&gt;% unique()
+genes[qh]$name</code></pre>
+<pre><code>## character(0)</code></pre>
+</div>
+</details>
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="importing-files-as-genomic-ranges" class="section level1">
+<h1>2. Importing files as Genomic Ranges</h1>
+<p>The <em>genomation</em> package has several useful functions to import annotation and sequencing files into R as <em>GRanges</em> objects.</p>
+<p>We are going to work with annotation files from the Human hg19 reference genome. The file <a href="http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.strict.bed"><em>Ensembl.GRCh37.74.edited.genes.strict.bed</em></a> contains gene annotations downloaded from the Ensembl database in <strong>bed</strong> format.</p>
+<p>Load the <strong>genomation</strong> library and use the <em>readBed</em> function to read in the file. You can download the file from the link above and save it in your working directory. Or, you can read directly from the URL.</p>
+<pre class="r"><code>library(genomation)
+## Read in a bed file if it exists on your computer
+#hg19.genes&lt;-readBed(&quot;Ensembl.GRCh37.74.edited.genes.strict.bed&quot;)
+## Read in a bed file from the web
+hg19.genes&lt;-readBed(&quot;http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.strict.bed&quot;)
+## Inspect the object
+hg19.genes</code></pre>
+<pre><code>## GRanges object with 57773 ranges and 2 metadata columns:
+##           seqnames            ranges strand |     score            name
+##              &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;     &lt;character&gt;
+##       [1]    chr13 23551995-23552136      - |         0 ENSG00000223116
+##       [2]    chr13 23708314-23708703      + |         0 ENSG00000233440
+##       [3]    chr13 23726726-23726825      - |         0 ENSG00000207157
+##       [4]    chr13 23743975-23744736      - |         0 ENSG00000229483
+##       [5]    chr13 23791572-23791673      - |         0 ENSG00000252952
+##       ...      ...               ...    ... .       ...             ...
+##   [57769]     chr3 14313874-14345345      - |         0 ENSG00000255021
+##   [57770]     chr3 14389952-14394068      - |         0 ENSG00000251576
+##   [57771]     chr3 14436149-14436257      + |         0 ENSG00000199609
+##   [57772]     chr3 14530620-14583588      - |         0 ENSG00000144596
+##   [57773]     chr2 61704985-61765761      - |         0 ENSG00000082898
+##   -------
+##   seqinfo: 25 sequences from an unspecified genome; no seqlengths</code></pre>
+<p>Note that the GRanges object has a “slot” for seqinfo which can store the lengths of each chromosome and the genome they are derived from. Some functions make use of seqinfo, for instance when calculating the gaps in coverage of a GRanges object we need to know where the end of each chromosome is. This information is currently empty but we will see how to update it later.</p>
+<pre class="r"><code>seqinfo(hg19.genes)</code></pre>
+<pre><code>## Seqinfo object with 25 sequences from an unspecified genome; no seqlengths:
+##   seqnames seqlengths isCircular genome
+##   chr1           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chr2           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chr3           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chr4           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chr5           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   ...             ...        ...    ...
+##   chr21          &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chr22          &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chrX           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chrY           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;
+##   chrM           &lt;NA&gt;       &lt;NA&gt;   &lt;NA&gt;</code></pre>
+<p>We can also use genomation to read in files that are not in a standard format using the <em>readGeneric</em> function. Let’s update our hg19.genes object by reading a file with more information (metadata) about each gene.</p>
+<p>This file contains the same gene annotations along with additional columns of information. The file is not in the strict <strong>bed</strong> format so we need to use the <em>readGeneric</em> function.</p>
+<p>The <em>meta.cols</em> argument allows us to specify the column numbers to be read as metadata and how to name these.</p>
+<pre class="r"><code>## This file contains the same gene annotations but has some extra columns in the table which we can also import.
+hg19.genes&lt;-readGeneric(&quot;http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed&quot;,chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
+
+## The meta.cols parameter is a list of metadata column numbers and the names we want to give them.
+hg19.genes</code></pre>
+<pre><code>## GRanges object with 57773 ranges and 3 metadata columns:
+##           seqnames            ranges strand |            name       symbol
+##              &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt; |     &lt;character&gt;  &lt;character&gt;
+##       [1]    chr13 23551994-23552136      - | ENSG00000223116   AL157931.1
+##       [2]    chr13 23708313-23708703      + | ENSG00000233440      HMGA1P6
+##       [3]    chr13 23726725-23726825      - | ENSG00000207157       RNY3P4
+##       [4]    chr13 23743974-23744736      - | ENSG00000229483    LINC00362
+##       [5]    chr13 23791571-23791673      - | ENSG00000252952     RNU6-58P
+##       ...      ...               ...    ... .             ...          ...
+##   [57769]     chr3 14313873-14345345      - | ENSG00000255021 RP11-536I6.2
+##   [57770]     chr3 14389951-14394068      - | ENSG00000251576 RP11-536I6.1
+##   [57771]     chr3 14436148-14436257      + | ENSG00000199609    RNA5SP124
+##   [57772]     chr3 14530619-14583588      - | ENSG00000144596        GRIP2
+##   [57773]     chr2 61704984-61765761      - | ENSG00000082898         XPO1
+##                        biotype
+##                    &lt;character&gt;
+##       [1]                miRNA
+##       [2]           pseudogene
+##       [3]             misc_RNA
+##       [4]              lincRNA
+##       [5]                snRNA
+##       ...                  ...
+##   [57769]              lincRNA
+##   [57770]              lincRNA
+##   [57771]                 rRNA
+##   [57772] processed_transcript
+##   [57773]       protein_coding
+##   -------
+##   seqinfo: 25 sequences from an unspecified genome; no seqlengths</code></pre>
+<p>We can use the metadata to filter our GRanges object using the <em>subset</em> function.</p>
+<pre class="r"><code>##Get all protein coding genes
+hg19.pc.genes&lt;-subset(hg19.genes,hg19.genes$biotype==&quot;protein_coding&quot;)
+hg19.pc.genes</code></pre>
+<pre><code>## GRanges object with 20327 ranges and 3 metadata columns:
+##           seqnames            ranges strand |            name       symbol
+##              &lt;Rle&gt;         &lt;IRanges&gt;  &lt;Rle&gt; |     &lt;character&gt;  &lt;character&gt;
+##       [1]    chr15 20737094-20747114      - | ENSG00000215405     GOLGA6L6
+##       [2]    chr15 21004687-21005367      + | ENSG00000268343   AC012414.1
+##       [3]    chr15 21040701-21071643      - | ENSG00000230031       POTEB2
+##       [4]    chr15 49280673-49338760      - | ENSG00000138593    SECISBP2L
+##       [5]    chr15 22011370-22012050      + | ENSG00000268531 DKFZP547L112
+##       ...      ...               ...    ... .             ...          ...
+##   [20323]    chr17 43224684-43229468      + | ENSG00000186834       HEXIM1
+##   [20324]    chr17 43238067-43247407      + | ENSG00000168517       HEXIM2
+##   [20325]    chr17 43298811-43324687      + | ENSG00000184922        FMNL1
+##   [20326]    chr10 22823778-23003484      - | ENSG00000150867      PIP4K2A
+##   [20327]     chr2 61704984-61765761      - | ENSG00000082898         XPO1
+##                  biotype
+##              &lt;character&gt;
+##       [1] protein_coding
+##       [2] protein_coding
+##       [3] protein_coding
+##       [4] protein_coding
+##       [5] protein_coding
+##       ...            ...
+##   [20323] protein_coding
+##   [20324] protein_coding
+##   [20325] protein_coding
+##   [20326] protein_coding
+##   [20327] protein_coding
+##   -------
+##   seqinfo: 25 sequences from an unspecified genome; no seqlengths</code></pre>
+<div class="resources">
+<h2>
+<p><i class="fas fa-book"></i> Further Learning</p>
+</h2>
+<p>There are several other import functions in <em>genomation</em>:</p>
+<ul>
+<li>readBam() ##Import sequencing alignments.</li>
+<li>readNarrowPeak() and readBroadPeak() ##Import ChIP-seq peak regions from commonly used peak caller tools.</li>
+<li>gffToGRanges() ##Import GFF annotation files.</li>
+<li>readTranscriptFeatures() ##Import a bed file and split it into promoter, exon and intron regions.</li>
+<li>More…</li>
+</ul>
+<p><em>genomation</em> also has several analysis functions:</p>
+<ul>
+<li>Perform additional operations on GRanges objects</li>
+<li>Annotate GRanges objects with other features</li>
+<li>Extract and visualise data across GRanges</li>
+<li>More…</li>
+</ul>
+<p>Take a look at the <em>genomation</em> <a href="https://bioconductor.org/packages/release/bioc/vignettes/genomation/inst/doc/GenomationManual.html">manual</a> and <a href="https://bioconductor.org/packages/release/bioc/manuals/genomation/man/genomation.pdf">documentation</a> to learn more.</p>
+</div>
+<p><br></p>
+<div class="key-points">
+<h2>
+<p><i class="fas fa-thumbtack"></i> Key points</p>
+</h2>
+<div id="section-1" class="section level2">
+<h2></h2>
+<ul>
+<li>Store genomic co-ordinates and metadata in <em>GRanges</em> objects</li>
+<li>Access information and perform operations on <em>GRanges</em> with functions from the <em>GenomicRanges</em> library.</li>
+<li>The <em>genomation</em> library has functions to easily load annotation files and other genomics datasets.</li>
+<li>All of the <em>Bioconductor</em> packages have very good documentation!</li>
+</ul>
+</div>
+</div>
+<p><br></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
