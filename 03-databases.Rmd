@@ -1,5 +1,5 @@
 ---
-title: "The Tidyverse"
+title: "Genomic annotation and sequences"
 output:
   html_document:
     df_print: paged
@@ -19,81 +19,349 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ##
 <div class="objectives">
 <h2><i class="far fa-check-square"></i> Learning Objectives</h2>
- * Understand the philosophy of Tidy Data
- * Get to know some of the Tidyverse packages
+ * Fetch genomic annotation and sequence data from annotation packages
+ * Connect to external databases to download data
 </div>
 <br>
 
-The **`tidyverse`** is a suite of packages that includes libraries such as **`dplyr`** and **`ggplot2`**. These packages are designed for data science and share underlying principles, grammar and data structures. There are many ways to do the same thing in R, but following the philosophy of *tidy data* and using the **`tidyverse`** packages will keep your datasets organised and make analysis easier in the long run. 
+# 3. Fetching data from annotation packages and external databases
 
-<br>
+There are several [annotation packages](https://www.bioconductor.org/packages/release/data/annotation/) within Bioconductor with pre-built databases that are ready to use. These include gene annotations, transcript models and genome sequences, as well as micro-array probe annotations and functional annotations like KEGG (pathway maps) and GO (gene ontology terms). 
 
-## Tidy data
-***
+First, let's make sure you have the following datasets from the GenomicRanges lesson:
 
-Data can be represented in many different ways across multiple tables but the tidyverse packages are specifically designed to work with **tidy** datasets. Tidy data conforms to the following criteria:
+```{r message=FALSE, warning=FALSE}
+library(GenomicRanges)
+library(genomation)
+gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
+            ranges = IRanges(start = sample(1000000,5) ,
+            width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))
 
-* Each variable has its own column
-* Each row is a single observation
-* Each value has its own cell
-
-![](images/tidy.png)
-
-This is the optimal structure when working in R and provides consistency amongst your datasets. Getting your data into R and wrangling it into the correct format is always the first step in your analysis. Fortunately, the **`tidyr`** package contains many functions to *tidy* up your dataset.
-
-We will start by reading in a dataset. The **`readr`** package has functions for importing data as **tibbles**. Tibbles are the tidyverse compatible version of an R dataframe. They have stricter formatting and allow you to perform grouping of variables as we will see in the next section.
-
-```{r, results='hide'}
-library(tidyverse)
-
-#If you already have the data installed on your computer you can read from a file:
-surveys <- read_csv("data/surveys_complete.csv")
+hg19.genes<-readBed("http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.strict.bed")
+hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
 ```
 
-```{r, results = 'hide'}
-#Otherwise you can read from a URL
-surveys <- read_csv("http://bifx-core.bio.ed.ac.uk/training/R_dplyr_and_ggplot2/data/surveys_complete.csv")
+----
+
+## 3.1 Genomic sequences (*BSgenome*)
+
+*BSgenome* packages contain genome reference sequences. We can use these to fetch the underlying sequences in GRanges objects and in conjunction with other functions that require sequence information e.g. motif discovery, calculating GC content etc.
+
+Load the *BSgenome* library for **hg19** and assign it to an object *hs*.
+
+```{r}
+## Load the hg19 BSgenome object
+library(BSgenome.Hsapiens.UCSC.hg19)
+hs<-BSgenome.Hsapiens.UCSC.hg19
 ```
 
-<br>
-<div class="discussion">
-<h2><i class="far fa-bell"></i> Discussion</h2>
-* Look at the options available in the `read_csv` and compare this with the `read.table` function we saw earlier.
-* What other `readr` functions can you find?
+The *Biostrings* package is automatically loaded along with any *BSgenome* and contains functions to work with genomic sequences.
+
+```{r}
+## Fetch sequences for the genomic intervals in GRanges object gr2  
+gr2.seq<-getSeq(hs,gr2)
+gr2.seq
+```
+
+```{r}
+## Calculate the dinucleotide frequencies for each sequence
+dinucleotideFrequency(gr2.seq)
+```
+
+All *BSgenome* databases contain a *seqinfo* object that describes the genome. We can add this information to any of our GRanges objects.
+
+```{r}
+seqinfo(hs)
+```
+
+```{r}
+## Let's update our human protein coding genes GRanges object
+seqinfo(hg19.pc.genes) <- seqinfo(hs)
+hg19.pc.genes
+```
+
+```{r}
+## Print out seqinfo
+seqinfo(hg19.pc.genes)
+```
+
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+1.Find the GC content for each sequence in gr2.seq.
+**Hint**: Look at the *letterFrequency* or *alphabetFrequency* functions.
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+```{r}
+letterFrequency(gr2.seq,letters = "GC",as.prob = T)
+```
+</div>
+</details>
+2.Attempt to translate the sequences in *gr2.seq* into amino acid sequences using the *Biostrings* package. 
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+```{r message=FALSE, warning=FALSE}
+translate(gr2.seq)
+```
+</div>
+</details>
 </div>
 <br>
 
-This dataset contains observations from a field survey of different organisms at different sites (plots). Let's inspect the data.
+----
+
+## 3.2 Annotation Maps (*org.db*)
+
+The annotation databases within R are collectively known as AnnotationDb objects. They can all be queried using the keys(), keytypes(), columns() and select() functions. The *org.db* packages contain mappings between different gene identifiers and annotations for specific organsims.
 
 ```{r}
-#Type an R objects name to print the contents
-surveys
-```
+## Load the human org.db object
+library(org.Hs.eg.db)
 
-```{r, eval=F}
-#Use the View function
-View(surveys)
+## The columns() function allows you to see the annotations that can be extracted
+columns(org.Hs.eg.db)
 ```
 
 ```{r}
-#We can look at the structure of the dataset
-str(surveys)
+## The keytypes() are the columns that can be searched (in this case all of them)
+keytypes(org.Hs.eg.db)
 ```
 
-<br>
+To search for annotations we first need a set of 'keys'. Here we will use the protein coding Ensembl gene identifiers from our GRanges object *hg19.pc.genes*.
+
+```{r}
+## Choose a set of "keys" or search terms
+keys<-hg19.pc.genes$name
+```
+
+We can then use the *select* function to extract information from the annotationDB package.
+
+```{r}
+## Use the select() function to extract the EntrezID, RefSeq ID and gene symbols for all of these Ensembl gene identifiers
+anno<-select(org.Hs.eg.db,columns=c("ENSEMBL","ENTREZID","SYMBOL","UNIPROT"),keys=keys,keytype="ENSEMBL")
+anno
+```
+
+There are also other annotation packages, such as *GO.db* which contains a set of annotation maps describing the entire Gene Ontology, that we can probe in the same manner as above.
+
+----
+
+## 3.3 Gene Models (*TxDB*)
+
+We can import gene models from packages like *TxDB* which contain a database of transcript structures. 
+
+Load the *TxDb.Hsapiens.UCSC.hg19.knownGene* library and assign it to an object called *txdb*.
+
+```{r}
+## Load the Human hg19 transcript database
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb<-TxDb.Hsapiens.UCSC.hg19.knownGene
+## See which columns can be returned
+columns(txdb)
+```
+
+```{r}
+## See which columns can be searched
+keytypes(txdb)
+```
+
+```{r}
+## Select columns from the first 10 entries in txdb
+select(txdb,keys = head(keys(txdb)),
+       columns=c('GENEID', 'TXCHROM', 'TXSTART', 'TXEND', 'TXID'),
+       keytype="GENEID")
+```
+
+The *org.db* and *TxDB* databases are all centred upon Entrez gene IDs. However, we commonly use gene annotations from the Ensembl database. It is possible to make your own txdb objects.
+
+```{r}
+## Fetch gene models from the Ensembl server
+#txdb.ens<-makeTxDbFromEnsembl(organism = "Homo sapiens",release=74)
+
+## We don't run this command in this workshop as it will require additional installation of RMaria database on your computer.
+```
+
+```{r}
+## Create a txdb from a GFF file
+txdb.gff<-makeTxDbFromGFF(file = "http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Homo_sapiens.GRCh37.74.edited.gtf",format = "gtf",organism = "Homo sapiens")
+
+columns(txdb.gff)
+```
+
+```{r}
+##Let's look at the first few entries
+select(txdb.gff,keys = head(keys(txdb.gff)),
+       columns=c('GENEID', 'TXCHROM', 'TXSTART', 'TXEND', 'TXNAME'),
+       keytype="GENEID")
+```
+
+
 <div class="resources">
-<h2><i class="fas fa-book"></i> Further Resources</h2>
-* There are [cheatsheets](https://rstudio.com/resources/cheatsheets/) available for many tidyverse and rstudio packages that will help you to choose the correct functions.
-* Take a look at these [slides](https://drive.google.com/open?id=181oNGmKKxyx3XUDvYFgxtGj4aQjCguW0LRb3r0UIviM) or [www.tidyverse.org](www.tidyverse.org) for more information on the tidyverse.
+<h2><i class="fas fa-book"></i> Further Learning</h2>
+There are several other methods to create and interact with txdb objects in the *GenomicFeatures* package including from GRanges objects or by connecting directly to the Ensembl, UCSC or BioMart databases.
+
+There is a good tutorial [here](https://bioconductor.org/packages/release/bioc/vignettes/GenomicFeatures/inst/doc/GenomicFeatures.html).
+</div>
+<br>
+
+----
+
+## 3.4 Fetching online data (*biomaRt*)
+
+We can also fetch data housed in online databases using the *biomaRt* package. Biomart is a web interface for downloading data from sites such as Ensembl. You can play around with the web version [here](https://www.ensembl.org/biomart/martview/).
+
+Load the *biomaRt* library and set it to use the **ensembl** biomart.
+
+```{r}
+library(biomaRt)
+```
+
+```{r eval=F}
+## Let's use the Ensembl bioMart.
+ensembl<-useMart("ensembl")
+## Every species is a different dataset. Let's list the options.
+listDatasets(ensembl)
+```
+
+You will see that there are a lot of Ensembl databases. We will specifically select the human database.
+
+```{r}
+## Select the human dataset within the Ensembl biomart
+ensembl<-useMart("ensembl",dataset="hsapiens_gene_ensembl")
+```
+
+By default *useMart* will always select the most recent release of the Ensembl database and therefore the current genome assembly, in this case hg38. Because we have so far used data from the previous assembly (hg19/hg37) we must select an archived version of Ensembl. The archived versions are listed [here](https://www.ensembl.org/info/website/archives/index.html).
+
+```{r}
+##use an archived version of biomart
+hg19.ensembl <- useMart(biomart="ensembl",host="grch37.ensembl.org", path="/biomart/martservice", dataset="hsapiens_gene_ensembl")
+```
+
+We can build a biomart query with attributes, filters and values similar to the AnnotationDB objects columns, keytypes and keys used above.
+
+```{r eval=FALSE}
+##List the attributes and filters of the human dataset
+listAttributes(hg19.ensembl)
+```
+
+```{r eval=FALSE}
+listFilters(hg19.ensembl)
+```
+
+We can query biomart using *getBM*. Let's extract annotations for the gene MeCP2.
+
+```{r}
+## Create biomart query for MeCP2
+getBM(attributes =c("chromosome_name","start_position","end_position","hgnc_symbol","ensembl_gene_id","strand"),
+      filters = "ensembl_gene_id",
+      values = "ENSG00000169057", 
+      mart = hg19.ensembl)
+```
+
+If we run the same query using the current version of Ensembl you can see that the co-ordinates differ. This why it's important to ensure you are always working with a consistent reference assembly!
+
+```{r}
+## Run the query with the current ensembl hg38 database
+getBM(attributes =c("chromosome_name","start_position","end_position","hgnc_symbol","ensembl_gene_id","strand"),
+      filters = "ensembl_gene_id",
+      values = "ENSG00000169057", 
+      mart = ensembl)
+```
+
+----
+
+## 3.5 Annotation hubs (*AnnotationHub*)
+
+*AnnotationHub* is another source of data within R. You can use the annotation hub to retrieve R objects and text files for multiple datasets and projects including Ensembl, UCSC, Broad Institute and the Epigenetics Roadmap project. You can even create your own AnnotationHub to provide access to your datasets.
+
+Load the *AnnotationHub* library and create a hub connection called *ah*. It may ask you to create a cache folder in your home directory to store files locally. This will speed up access to this data in future.
+
+```{r}
+library(AnnotationHub)
+ah = AnnotationHub()
+##View all of the data providers within AnnotationHub 
+unique(ah$dataprovider)
+```
+
+We can use collections of search terms to query the annotation hub. Let's find the Ensembl hg19 gene annotations first.
+
+```{r}
+query(ah,c("GRCh37"))[1:10]
+```
+
+Let's get version 74 of the Ensembl database as a GRanges object.
+
+```{r}
+Ensembl.hg19.74.gr<-ah[["AH8753"]]
+```
+
+If we wanted to, we could create a *txdb* object with *makeTxDbFromGRanges*. Let's download a different dataset from the annotation hub.
+
+The EpigenomeRoadMap data is hosted online and can be searched [here](https://egg2.wustl.edu/roadmap/web_portal). The data is also provided by the Broad Institute as an annotation hub.
+
+```{r}
+## Find H3K4me3 peak files from the EpigenomeRoadMap datasets for experiment E010 (Cultured neuronal cells).
+epiFiles <- query(ah, c("EpigenomeRoadMap","E010","narrowPeak","H3K4me3"))
+epiFiles
+```
+
+There is a single hit for this search with the name *AH30032*. Let's import the H3K4me3 ChIP-seq peaks as GRanges.
+
+```{r}
+##These files will be imported as GRanges objects
+H3K4me3<-epiFiles[["AH30032"]]
+H3K4me3
+```
+
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+Can you get the sequences of the 10 longest exons in the Mouse Ensembl gene models?
+
+**Hints:**
+
+* There is a gtf file from Ensembl available at the URL below, or you could try to fetch the gene models using *AnnotationHub*. "http://bifx-core.bio.ed.ac.ukgenomes/mouse/mm10/annotation/Mus_musculus.GRCm38.78.edited.gtf"
+* Use the *exons* function to extract exons from a *txdb* object.
+* Reorder the exons by *width* with the *order* function.
+* Load the mm10 *BSgenome* library and get the reference sequence using the *getSeq* function.
+* Use the *writeXStringSet* function to export sequences in fasta format.
+
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+```{r}
+## create a txdb object from the gtf file downloaded from Ensembl
+txdb.mm10<-makeTxDbFromGFF(file = "http://bifx-core.bio.ed.ac.uk/genomes/mouse/mm10/annotation/Mus_musculus.GRCm38.78.edited.gtf")
+## Get exons as GRanges
+exons<-exons(txdb.mm10)
+## Sort by width
+exons.sorted<-exons[order(width(exons),decreasing=T),]
+## Select the top 10
+top.exons<-exons.sorted[1:10,]
+## Set the GRanges names to the exon_id
+names(top.exons)<-top.exons$exon_id
+## Get the mm10 sequence
+library(BSgenome.Mmusculus.UCSC.mm10)
+mm10<-BSgenome.Mmusculus.UCSC.mm10
+## Fetch exon sequences
+top.exons.seq<-getSeq(mm10,top.exons)
+## Output sequences as a fasta file
+writeXStringSet(top.exons.seq, 'long_exons.fa')
+top.exons.seq
+```
+</div>
+</details>
 </div>
 <br>
 
 <div class="key-points">
 <h2><i class="fas fa-thumbtack"></i> Key points</h2>
 ##
- * The tidyverse is a suite of R packages
- * Stick to the principles and philosophy of tidy data
- * Use the `readr` package to import data as tibbles 
- * Use further tidyverse packages to tidy, re-format and visualise data
+ * Bioconductor has specialised packages for working with genomics data in R.
+ * Genomic sequences, annotations and datasets can be imported by various means.
+ * It is possible to create your own annotation objects.
 </div>
 <br>

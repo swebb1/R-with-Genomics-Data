@@ -26,341 +26,269 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 </div>
 <br>
 
-The **dplyr** package is specifically designed for data formatting and manipulation and allows you to merge datasets and create new columns as well as filtering and summarising your data. We are going to learn some of the most common functions.
+# 4. Annotating GenomicRanges
 
-<br>
+As we have seen, there are several different methods to create and import genome annotation data. Bioconductor also has many packages designed to analyse and annotate genomic datasets.
 
-## Selecting columns and filtering rows
-***
+There are several options for annotating *GRanges* objects with sets of features. *Genomation* and *ChIPpeakAnno* for instance all provide methods to do this. There are also packages like Homer and DeepTools available outside of R. Here we are going to use *ChIPseeker* to annotate sets of ChIP-seq peaks relative to gene annotations.
 
-First, make sure the tidyverse package is loaded and you have read in the `surveys` dataset.
+First, let's make sure you have the following datasets from previous lessons:
 
-```{r results='hidden'}
-library(tidyverse)
-surveys <- read_csv("http://bifx-core.bio.ed.ac.uk/training/R_dplyr_and_ggplot2/data/surveys_complete.csv")
+```{r message=FALSE, warning=FALSE}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(org.Hs.eg.db)
+
+txdb.gff<-makeTxDbFromGFF(file = "http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Homo_sapiens.GRCh37.74.edited.gtf",format = "gtf",organism = "Homo sapiens")
 ```
 
-To select columns of a dataframe, use `select()`. The first argument to this function is the data frame `surveys`, and the subsequent arguments are the columns to keep.
+----
 
-```{r eval=F, purl = FALSE}
-select(surveys, plot_id, species_id, weight)
-```
+## 4.1 The data
 
-To drop columns from a dataframe, put a "-" in front of the variable to exclude it.
+We are going to use data from the ChIPSeeker tutorial which includes ChIP-seq peaks for CBX6 and CBX7 in human fibroblasts, 2 components of the polycomb repressive complex ([GEO GSE40740](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE40740)). In addition, there are also ChIP-seq peaks for human andronegen receptor (AR) in cells at 3 different concentrations of andronegen ARmo_0M, ARmo_1nM, ARmo_100nM ([GEO GSE48308](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE48308)).
 
-```{r eval=F, purl = FALSE}
-select(surveys, -record_id, -species_id)
-```
+These datasets are all aligned to the human hg19 assembly.
 
-This will select all the variables in `surveys` except `record_id` and `species_id`.
+----
 
-To choose rows based on specific criteria, use `filter()`:
+## 4.2 Annotate peaks
 
-```{r eval=F, purl = FALSE}
-filter(surveys, year == 1995)
-```
+Load the **ChIPseeker** library and the CBX6 peaks as a *GRanges* object. The *readPeakFile* function is provided by **ChIPseeker** but you could also use *readBed* from the **genomation** package. 
 
-<br>
-
-## Pipes
-***
-
-What if you want to select and filter at the same time? There are three ways to do this:
-
-* Intermediate objects
-* Nested functions
-* Pipes
-
-With intermediate objects, you create a temporary dataframe and use that as input to the next function, like this:
-
-```{r, eval=F, purl = FALSE}
-surveys2 <- filter(surveys, weight < 5)
-surveys_sml <- select(surveys2, species_id, sex, weight)
-```
-
-This is readable, but can clutter up your workspace with lots of objects that you have to name individually and keep track of.
-
-You can also *nest* functions (i.e. one function inside of another), like this:
-
-```{r, eval=F, purl = FALSE}
-surveys_sml <- select(filter(surveys, weight < 5), species_id, sex, weight)
-```
-
-This is handy, but can be difficult to read if too many functions are nested. R evaluates the expression from the inside out (in this case, filtering, then selecting).
-
-The alternative is to use *pipes*. Pipes let you take the output of one function and send it directly to the next, which is useful when you need to do many things to the same dataset. Pipes in R look like `%>%` and are made available via the **magrittr** package, installed automatically with **dplyr**. If you use RStudio, the keyboard shortcut for a pipe is <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd>.
-
-```{r, eval=F, purl = FALSE}
-surveys %>%
-  filter(weight < 5) %>%
-  select(species_id, sex, weight)
-```
-
-Here we are 'piping' the `surveys` dataset through the `filter()` function, then through `select()`. Since `%>%` takes the object on its left and passes it as the first argument to the function on its right, we don't need to explicitly include the dataframe as an argument to the `filter()` and `select()` functions any more.
-
-Some may find it helpful to read the pipe like the word "then". For instance, in the above example, we took the data frame `surveys`, *then* we `filter`ed for rows with `weight < 5`, *then* we `select`ed columns `species_id`, `sex`, and `weight`. The **dplyr** functions by themselves are somewhat simple, but by combining them into linear workflows with the pipe, we can accomplish more complex manipulations of data frames.
-
-If we want to create a new object with this smaller version of the data, we can assign it a new name:
-
-```{r, results = 'hide', purl = FALSE}
-surveys_sml <- surveys %>%
-  filter(weight < 5) %>%
-  select(species_id, sex, weight)
-surveys_sml
-```
-
-Note that the final data frame is the leftmost part of this expression.
-
-<br>
-<div class="challenge">
-<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
-Using pipes, subset the `surveys` data to include animals collected before 1995 and retain only the columns `year`, `sex`, and `weight`.
-<details>
-<summary></summary>
-<div class="solution">
-<h2><i class="far fa-eye"></i> Solution:</h2>
 ```{r}
-surveys %>%
-  filter(year < 1995) %>%
-  select(year, sex, weight)
-```
-</div>
-</details>
-</div>
-<br>
-
-## Exporting data
-***
-
-Similar to the `read_csv()` function there is also a `write_csv()` function. If you want to export any of your newly created datasets you can do this as follows:
-
-```{r, eval=F}
-##Create a data folder
-dir.create("data")
-
-write_csv(surveys_sml, file = "data/surveys_small.csv")
-#Or use write_tsv for tab separated files
+library(ChIPseeker)
+## Get the example file locations
+peakFiles <- getSampleFiles()
+## Select CBX6 for further analysis
+CBX6 <- readPeakFile(peakFiles[[4]])
+## Inspect the GRanges object
+CBX6
 ```
 
-<br>
+First, let's visualise the distribution of CBX6 peaks along the genome.
 
-## Mutate
-***
-
-Frequently, you'll want to create new columns based on the values in existing columns, for example to do unit conversions, or to combine values from two columns. For this we use `mutate()`.
-
-To create a new column of weight in kg:
-
-```{r, eval=F,purl = FALSE}
-surveys %>%
-  mutate(weight_kg = weight * 1000)
-```
-
-You can also create a second new column based on the first new column within the same call of `mutate()`:
-
-```{r, eval=F, purl = FALSE}
-surveys %>%
-  mutate(weight_kg = weight * 1000,
-         weight_lb = weight_kg * 2.2)
-```
-
-If you just want to see the first few rows, you can use a pipe to view the `head()` of the data. 
-
-```{r, eval=F,purl = FALSE}
-surveys %>%
-  mutate(weight_kg = weight / 1000) %>%
-  head()
-```
-
-<br>
-<div class="challenge">
-<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
-Create a new data frame from the `surveys` data that meets the following criteria: Contains only the `species_id` column and a new column called `hindfoot_cm` containing the `hindfoot_length` values converted to centimeters. In this `hindfoot_cm` column all values are less than 3.
-
-**Hint**: think about how the commands should be ordered to produce this data frame!
-<details>
-<summary></summary>
-<div class="solution">
-<h2><i class="far fa-eye"></i> Solution:</h2>
 ```{r}
-surveys_hindfoot_cm <- surveys %>%
-    mutate(hindfoot_cm = hindfoot_length / 10) %>%
-    filter(hindfoot_cm < 3) %>%
-    select(species_id, hindfoot_cm)
-```
-</div>
-</details>
-</div>
-<br>
-
-## Group_by and summarise 
-***
-
-Many data analysis tasks can be approached using the *split-apply-combine* paradigm: split the data into groups, apply some analysis to each group, and then combine the results. **dplyr** makes this very easy through the use of the `group_by()` function.
-
-`group_by()` is often used together with `summarise()`, which collapses each group into a single-row summary of that group. The `group_by()` function takes as arguments the column names that contain the **categorical** variables for which you want to calculate the summary statistics. The `summarise()` function computes a summary statistic for each group using a specified function and variable. So to compute the mean `weight` by sex:
-
-```{r, eval=F, purl = FALSE}
-surveys %>%
-  group_by(sex) %>%
-  summarise(mean_weight = mean(weight))
+## Plot distribution of peaks and peak heights on Chromosomes
+covplot(CBX6, weightCol="V5")
 ```
 
-You can also group by multiple columns:
+We will now use the *txdb* object we created earlier to annotate our peaks with gene features. The promoter regions are given as +/- 3Kb around the TSS of each gene.
 
-```{r, eval=F,purl = FALSE}
-surveys %>%
-  group_by(sex, species_id) %>%
-  summarise(mean_weight = mean(weight))
+```{r}
+## Annotate the peak regions with gene features. We can also set the level to "transcript"
+peakAnno <- annotatePeak(CBX6, tssRegion=c(-3000, 3000),
+                         TxDb=txdb.gff, annoDb="org.Hs.eg.db",level="gene")
+
+peakAnno
 ```
 
-Once the data are grouped, you can create multiple summary columns at the same time. For instance, we could add columns indicating the minimum weight and mean hindfoot length for each species for each sex:
+This output shows us the distribution of peaks with respect to gene features. The *peakAnno* object also contains a *GRanges* object where our peaks are annotated with overlapping features in the metadata. 
 
-```{r, eval = F, purl = FALSE}
-surveys %>%
-  group_by(sex, species_id) %>%
-  summarise(min_weight = min(weight),
-            mean_hindfoot_length = mean(hindfoot_length))
+```{r}
+## Let's look at our annotated GRanges object
+as.GRanges(peakAnno)
 ```
 
-It is sometimes useful to rearrange the result of a query to inspect the values. For instance, we can sort on `min_weight` to put the lighter species first and :
+----
 
-```{r, eval = F, purl = FALSE}
-surveys %>%
-  group_by(sex, species_id) %>%
-  summarise(min_weight = min(weight),
-            mean_hindfoot_length = mean(hindfoot_length)) %>%
-  arrange(min_weight)
+## 4.3 Visualise annotations
+
+We can visualise the distribution of peaks relative to gene features by plotting the *peakAnno* object.
+
+```{r}
+plotAnnoBar(peakAnno)
 ```
 
-To sort in descending order, we need to add the `desc()` function. If we want to sort the results by decreasing order of mean weight:
+Here we can see that ~60% of our peaks can be found in or around promoter regions.
 
-```{r, eval = F, purl = FALSE}
-surveys %>%
-  group_by(sex, species_id) %>%
-  summarise(min_weight = min(weight),
-            mean_hindfoot_length = mean(hindfoot_length)) %>%
-  arrange(desc(min_weight))
+We can also annotate and plot multiple peaks at once. Let's use all of the sample datasets within ChIPSeeker. To do this, we use the *lapply* function in base R to loop through our peak files and run the *annotatePeak* function. 
+
+```{r}
+## lapply loops all of the files through the annotatePeak function to create a list of annotated peaks
+peakAnnoList <- lapply(peakFiles, annotatePeak, TxDb=txdb.gff,
+                       tssRegion=c(-3000, 3000),annoDb="org.Hs.eg.db",level="gene")
 ```
 
-<br>
-
-## Count
-***
-
-When working with data, we often want to know the number of observations found for each factor or combination of factors. For this task, **dplyr** provides `count()`. For example, if we wanted to count the number of rows of data for each sex, we would do:
-
-```{r, eval = F, purl = FALSE}
-surveys %>%
-    count(sex) 
+```{r}
+## Plot all the sets of peaks together
+plotAnnoBar(peakAnnoList)
 ```
 
-The `count()` function is shorthand for something we've already seen: grouping by a variable, and summarising it by counting the number of observations in that group. In other words, `surveys %>% count(sex)` is equivalent to:  
+We can clearly see different distributions of peaks in relation to genomic features for the AR and CBX proteins.
 
-```{r, eval = F, purl = FALSE}
-surveys %>%
-    group_by(sex) %>%
-    summarise(count = n()) #n() counts the size of each group
+----
+
+## 4.4 Plot peak distributions around TSS
+
+Let's plot the positions of peaks for all samples relative to the TSS regions in our gene model. We first need to create a matrix of peaks around the TSS regions. This can take some time so we will use a pre-computed dataset.
+
+```{r}
+## Set the promoter regions
+promoter <- getPromoters(TxDb=txdb.gff, upstream=3000, downstream=3000)
+
+## !!! The step below takes around 10 mins to complete, in order to speed up the tutorial the data is supplied below!!!##
+
+## Create a matrix of peak positions for each of the samples. Be patient, this will take around 10 mins to run.
+#tagMatrixList <- lapply(peakFiles, getTagMatrix, windows=promoter)
+data("tagMatrixList")
+
 ```
 
-If we wanted to count a *combination of factors*, such as `sex` and `species`, we would specify the first and the second factor as the arguments of `count()`:
+We can now plot out the matrix to see the average profile of peaks around promoter regions. The *conf* and *
 
-```{r eval = F, purl = FALSE}
-surveys %>%
-  count(sex, species) 
-```
+```{r}
+## Plot average profiles of peak distribution across promoter regions
+plotAvgProf(tagMatrixList, xlim=c(-3000, 3000), facet="row")
 
-With the above code, we can proceed with `arrange()` to sort the table according to a number of criteria so that we have a better comparison. For instance, we might want to arrange the table above in (i) an alphabetical order of the levels of the species and (ii) in descending order of the count:
-
-```{r eval = F, purl = FALSE}
-surveys %>%
-  count(sex, species) %>%
-  arrange(species, desc(n))
+## It is possible to add errors to your plots by adding conf and resample arguments. This will run bootstrapping but will take some time.
+#plotAvgProf(tagMatrixList, xlim=c(-3000, 3000), facet="row",conf=0.95,resample=1000)
 ```
 
-<br>
-<div class="challenge">
-<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
-How many animals were caught in each `plot_type` surveyed?
-<details>
-<summary></summary>
-<div class="solution">
-<h2><i class="far fa-eye"></i> Solution:</h2>
-```{r, eval = F,  purl=FALSE}
-surveys %>%
-    count(plot_type) 
+We can also plot this as a heatmap rather than an average profile.
+
+```{r}
+##Plot heatmaps of peak distribution across promoter regions
+tagHeatmap(tagMatrixList, xlim=c(-3000, 3000), color=NULL)
 ```
-</div>
-</details>
-Use `group_by()` and `summarise()` to find the mean, min, and max hindfoot length for each species (using `species_id`). Also add the number of observations (hint: see `?n`).
-<details>
-<summary></summary>
-<div class="solution">
-<h2><i class="far fa-eye"></i> Solution:</h2>
-```{r, eval = F,  purl=FALSE}
-surveys %>%
-   group_by(species_id) %>%
-   summarise(
-       mean_hindfoot_length = mean(hindfoot_length),
-       min_hindfoot_length = min(hindfoot_length),
-       max_hindfoot_length = max(hindfoot_length),
-       n = n())
+
+With both plots we can see a definite enrichment of ChIP-seq peaks around the TSS in both CBX6 and CBX7.
+
+----
+
+## 4.5 Overlapping peaks and features
+
+It is useful to know to what extent peaks from different samples overlap and whether this overlap is statistically significant, as it may imply co-operative binding. **ChIPseeker** has a function *enrichPeakOverlap* to calculate and test overlaps between peak sets.
+
+The function generates a null distribution by randomly shuffling the positions of the query peaks throughout the genome and testing for overlaps with the other peaks, then repeating this many times. You should set the *nShuffle* argument to >=1000 for robust results.
+
+```{r}
+enrichPeakOverlap(queryPeak     = CBX6,
+                  targetPeak    = unlist(peakFiles[1:4]),
+                  TxDb          = txdb.gff,
+                  pAdjustMethod = "BH",
+                  nShuffle      = 1000,
+                  verbose       = TRUE)
 ```
-</div>
-</details>
- What was the heaviest animal measured in each year? Return the columns `year`, `genus`, `species_id`, and `weight`. Order the output by `year`.
-<details>
-<summary></summary>
-<div class="solution">
-<h2><i class="far fa-eye"></i> Solution:</h2>
-```{r, eval = F,  purl=FALSE}
-surveys %>%
-   group_by(year) %>%
-   filter(weight == max(weight)) %>%
-   select(year, genus, species, weight) %>%
-   arrange(year)
+
+**Genomation** also has some nice functions for looking at overlaps between *GRanges* objects:
+
+```{r}
+# Genomation can annotate a GRanges object with another
+library(genomation)
+CBX6.promoters<-annotateWithFeature(CBX6,promoter,feature.name ="Promoters")
+CBX6.promoters
 ```
-</div>
-</details>
+
+```{r}
+## Plot the annotation overlap as a pie chart
+plotTargetAnnotation(CBX6.promoters,col=c("#0B7189","#8FD694"),main="CBX6")
+```
+
+```{r}
+##Read in CBX7 and AR1 file as GRanges
+CBX7<-readPeakFile(peakFiles[[5]])
+AR1<-readPeakFile(peakFiles[[1]])
+CBX.overlap<-annotateWithFeatures(CBX6,GRangesList(CBX7=CBX7,AR1=AR1))
+CBX.overlap
+```
+
+
+<div class="resources">
+<h2><i class="fas fa-book"></i> Further Learning</h2>
+If you are working with ChIP-seq data then it is worth going through the [ChIP-seeker tutorial](https://bioconductor.org/packages/release/bioc/vignettes/ChIPseeker/inst/doc/ChIPseeker.html) as there are many other useful functions:
+
+* Plotting average peak profile across gene bodies and other features
+* Functional enrichment analysis
+* Venn diagrams of peak set overlaps
+
 </div>
 <br>
 
-<br>
-<div class="discussion">
-<h2><i class="far fa-bell"></i> Discussion</h2>
-* Look at the `surveys` dataset with the `print()` function. How many rows and columns does it have?
-* By default, tibbles hide a lot of the data to prevent the screen from getting crowded. How can you show more rows and all of the columns? 
-* What other questions can we ask of this dataset? Set a challenge for a partner or your group using the dplyr functions.
-</div>
-<br>
+## 5 Testing for significant overlaps
 
-## Pivoting functions in tidyr
-***
+The *regioneR* package performs association analysis of overlapping features based on permutation tests. The permutation test first calculates the number of overlaps between a genomic feature and a set of given regions. To test if this number is expected by chance it also calculates a distribution of feature overlaps from numerous sets of randomised regions.
 
-The **tidyr** package contains the functions `pivot_longer()` and `pivot_wider()` which allow you to transform a dataset between *long* and *wide* formats. For instance, what if we wanted to compare the mean weights of each species at each plot (using plot_id). 
+![](http://bifx-core.bio.ed.ac.uk/Shaun/Shaun/training/ROI_workshop/regioner.png)
 
-We'd need to create a new table where each row is comprised of values of variables associated with each plot. In practical terms this means the values in `genus` would become the names of column variables and the cells would contain the values of the mean weight observed on each plot.
-
-![](images/spread_data_R.png)
-
-Having created a new table, it is then straightforward to explore the relationship between the weight of different genera within, and between, the plots. The key point here is that we are still following a tidy data structure,but we have **reshaped** the data according to the observation of interest. Mean genus weight per plot, instead of recordings per date.
-
-First, lets create `surveys_gw` where observations for each plot (genus and mean_weight) are spread across multiple rows: 
-
-```{r, results="hide",purl=FALSE}
-surveys_gw <- surveys %>%
-  group_by(plot_id, genus) %>%
-  summarise(mean_weight = mean(weight))
+```{r}
+library(regioneR)
+##Test the significance of overlaps between CBX6 and gene promoter regions.
+##For speed we use 50 permutations but at least 1000 are recommended
+pt<-permTest(A=CBX6,B=promoter,randomize.function = randomizeRegions, evaluate.function = numOverlaps,count.once=T,genome="BSgenome.Hsapiens.UCSC.hg19.masked",ntimes=50)
+pt
 ```
 
-Using `pivot_wider()` with `genus` as the names of the new columns and `mean_weight` as the values, we can create a table that allows us to compare mean weights of different genera at each plot. 
-
-```{r, eval=F, purl=FALSE}
-surveys_wide <- surveys_gw %>%
-  pivot_wider(names_from = genus,values_from = mean_weight)
+```{r}
+plot(pt)
 ```
 
-The opposing situation could occur if we had been provided with data in the form of `surveys_wide`, where the genus names are column names, but we wish to treat them as values of a variable instead. To do this we can use the `pivot_longer()` function.
+Other examples for looking at overlaps:
+
+* Overlap of ChIP-seq peaks of replicates to test reproducibility
+* Overlap of ChIP-seq peaks from different proteins to test for co-localisation
+* Overlap of differentially expressed genes with specific genomic features
+    + Chromatin marks
+    + Repeat types
+    + CpG islands
+    + etc.
+
+When using *RegioneR* you need to select an **evaluation** and **randomisation** function. 
+
+Here we have evaluated the number of overlaps between regions, you can also use the distance between regions or the mean score if your GRanges are weighted (e.g. methylation score). 
+
+For randomisation, we have used the randomizeRegions function which selects random regions from the genome with the same length distribution as our CBX6 peaks to approximate the null distribution. We supply a repeat masked BSgenome so only mappable regions of the genome are selected. 
+
+The alternative is to use resampleRegions. This assumes that your regions are part of a larger set e.g. differential binding sites. You can then approximate the null distribution by randomly sampling the same number from the full set of binding sites.
+
+All of this is described in depth in the [*regioneR* documentation](https://bioconductor.org/packages/devel/bioc/vignettes/regioneR/inst/doc/regioneR.pdf).
+
+# 6. Functional gene enrichment
+
+Because we have annotated CBX6 peaks we can ask if these genes are enriched for particular functional terms. We can use the *clusterProfiler* package to perform GO enrichment analysis.
+
+```{r}
+library(clusterProfiler)
+##Get the Entrez Gene IDs for genes with a CBX6 binding site
+#na.omit will remove all of the NA entries
+CBX6.gene<-na.omit(peakAnno@anno$ENTREZID)
+
+##Get all Entrez gene IDs to treat as background
+bg<-keys(org.Hs.eg.db)
+##Run the GO enrichment analysis
+ego <- enrichGO(gene          = CBX6.gene,
+                universe      = bg,
+                OrgDb         = org.Hs.eg.db,
+                ont           = "ALL",
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 0.01,
+                qvalueCutoff  = 0.05,
+                readable      = TRUE)
+head(ego)
+```
+
+```{r}
+##Plot the top enriched terms
+barplot(ego, showCategory=20,colorBy = "p.adjust")
+```
+
+*clusterProfiler* also provides methods to query pathway databases such as KEGG. You can find out more in the [documentation](http://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html).
+
+The package *gProfileR* looks at many different databases at once including GO, KEGG and transcription factor motifs. 
+
+```{r}
+library(gProfileR)
+##Get a table of enriched terms
+gp<-gprofiler(query = peakAnno@anno$geneId,organism = "hsapiens",significant = T,custom_bg = hg19.genes$name,max_p_value = 1)
+##Inspect the output, the "term" column is the enriched term and the "domain" tells us which database it belongs to. 
+gp
+```
+
+You can write table output to a tab separated file if you want to inspect it fully or load in excel. The file will appear in your working directory.
+
+```{r}
+##Write output to file
+write.table(gp,"gProfile.output.tab",quote=F,sep="\t",row.names=F,col.names = T)
+```
 
 <br>
 <div class="resources">

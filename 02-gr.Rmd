@@ -279,7 +279,7 @@ promoters(gl)
 
 </h2>
 
-1.There are many more functions in the [*Genomic Ranges*](https://bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.pdf) documentation as well as the [How To](http://bioconductor.org/packages/devel/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesHOWTOs.pdf) document.
+1.There are many more functions in the [*Genomic Ranges*](https://bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.html) documentation as well as the [How To](https://bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesHOWTOs.pdf) document.
 
 Read the documentation and see if you can figure out how to get the 1000 bases downstream of each of the ranges in gr2.
 
@@ -414,7 +414,7 @@ There are several other import functions in *genomation*:
 -   Extract and visualise data across GRanges
 -   More...
 
-Take a look at the *genomation* [manual](https://bioconductor.org/packages/release/bioc/vignettes/genomation/inst/doc/GenomationManual.html) and [documentation](https://bioconductor.org/packages/release/bioc/manuals/genomation/man/genomation.pdf) to learn more.
+Take a look at the *genomation* [manual](https://www.bioconductor.org/packages/release/bioc/vignettes/genomation/inst/doc/GenomationManual.html) and [documentation](https://www.bioconductor.org/packages/release/bioc/manuals/genomation/man/genomation.pdf) to learn more.
 :::
 
 <br>
