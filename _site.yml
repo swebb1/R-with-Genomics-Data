@@ -10,8 +10,6 @@ navbar:
       href: 03-databases.html
     - text: "Annotating genomic regions"
       href: 04-annotation.html
-    - text: "Plotting genomic data"
-      href: 05-plots.html
 output_dir: "."
 output:
   html_document:
