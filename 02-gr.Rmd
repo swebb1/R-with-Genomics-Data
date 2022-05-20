@@ -5,13 +5,12 @@ output:
   html_document:
     df_print: paged
     css: "style.css"
+    toc: true
+    toc_depth: 1
 ---
 
 <head>
-
-```{=html}
 <script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
-```
 </head>
 
 ```{r global_options, include=FALSE}
@@ -36,7 +35,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE,fig.align = 'center')
 
 <br>
 
-## 1. GenomicRanges
+# 1. GenomicRanges
 
 The **GenomicRanges** package defines general purpose containers, known as *GRanges* objects, for storing and manipulating genomic intervals and variables defined along a genome.
 

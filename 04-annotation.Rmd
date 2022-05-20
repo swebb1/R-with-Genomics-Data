@@ -1,10 +1,12 @@
 ---
-title: "Data Manipulation with dplyr"
+title: "Annotating genomic regions"
 
 output:
   html_document:
     df_print: paged
     css: "style.css"
+    toc: true
+    toc_depth: 1
 ---
 
 <head>
@@ -203,7 +205,7 @@ enrichPeakOverlap(queryPeak     = CBX6,
                   TxDb          = txdb.gff,
                   pAdjustMethod = "BH",
                   nShuffle      = 1000,
-                  verbose       = TRUE,
+                  verbose       = FALSE,
                   chainFile     = NULL)
 ```
 
@@ -213,20 +215,30 @@ The **regioneR** package performs association analysis of overlapping features b
 
 ![](images/regioner.png){ width=50% }
 
-Let's test the significance of overlaps between CBX6 peaks and promoter regions:
+**regioneR** takes a while to run, so we have supplied the code below as an example but will not run this in the workshop. We can use **regioneR** to test the significance of overlaps between CBX6 peaks and promoter regions:
 
 ```{r regioner}
 library(regioneR)
 ## Test the significance of overlaps between CBX6 and gene promoter regions.
-## For speed we use 50 permutations but at least 1000 are recommended
 
-#pt<-permTest(A=CBX6,B=promoter,randomize.function = randomizeRegions, evaluate.function = numOverlaps,count.once=T,genome="BSgenome.Hsapiens.UCSC.hg19.masked",ntimes=50)
-#pt
-```
-
-```{r}
+# pt<-permTest(A=CBX6,B=promoter,randomize.function = randomizeRegions, evaluate.function = numOverlaps,count.once=T,genome="BSgenome.Hsapiens.UCSC.hg19.masked",ntimes=1000)
+# pt
 # plot(pt)
 ```
+
+When using **regioneR** you need to select an *evaluation* and *randomisation* function. 
+
+Here we have evaluated the number of overlaps between regions, you can also use the distance between regions or the mean score if your *GRanges* are weighted (e.g. methylation score). 
+
+For randomisation, we have used the *randomizeRegions* function which selects random regions from the genome with the same length distribution as our CBX6 peaks to approximate the null distribution. We supply a repeat masked *BSgenome* so only mappable regions of the genome are selected. 
+
+The alternative is to use *resampleRegions*. This assumes that your regions are part of a larger set e.g. differential binding sites. You can then approximate the null distribution by randomly sampling the same number from the full set of binding sites.
+
+<div class="resources">
+<h2><i class="fas fa-book"></i> Further Learning</h2>
+All of this is described in depth in the [*regioneR* documentation](https://bioconductor.org/packages/release/bioc/vignettes/regioneR/inst/doc/regioneR.html).
+</div>
+<br>
 
 <div class="discussion">
 <h2><i class="far fa-bell"></i> Discussion</h2>
@@ -236,21 +248,6 @@ Can you think of other situations where we might want to look at overlaps of gen
 * Overlap of ChIP-seq peaks from different proteins to test for co-localisation
 * Overlap of differentially expressed genes with specific genomic features
     + Chromatin marks, classes of repeats, CpG islands etc.
-</div>
-<br>
-
-When using **RegioneR** you need to select an *evaluation* and *randomisation* function. 
-
-Here we have evaluated the number of overlaps between regions, you can also use the distance between regions or the mean score if your *GRanges* are weighted (e.g. methylation score). 
-
-For randomisation, we have used the *randomizeRegions* function which selects random regions from the genome with the same length distribution as our CBX6 peaks to approximate the null distribution. We supply a repeat masked *BSgenome* so only mappable regions of the genome are selected. 
-
-The alternative is to use *resampleRegions*. This assumes that your regions are part of a larger set e.g. differential binding sites. You can then approximate the null distribution by randomly sampling the same number from the full set of binding sites.
-
-
-<div class="resources">
-<h2><i class="fas fa-book"></i> Further Learning</h2>
-All of this is described in depth in the [*regioneR* documentation](https://bioconductor.org/packages/release/bioc/vignettes/regioneR/inst/doc/regioneR.html).
 </div>
 <br>
 

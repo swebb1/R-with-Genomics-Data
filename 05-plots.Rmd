@@ -1,5 +1,5 @@
 ---
-title: "Plotting sequencing data around genomic annotations"
+title: "Plotting genomic data"
 
 output: 
   html_document:
@@ -7,6 +7,8 @@ output:
     #fig_width: 2
     #fig_height: 2
     css: "style.css"
+    toc: true
+    toc_depth: 1
 ---
 
 <head>
@@ -22,34 +24,47 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ##
 <div class="objectives">
 <h2><i class="far fa-check-square"></i> Learning Objectives</h2>
-* Build graphics layer by layer with ggplot2
-* Create different types of graphics by applying geometries
-* Apply additional layers to a graphic
-* Visually subset graphics by applying fills and gradients 
-* Change the appearance of graphics using themes
-* Create sub-graphics by applying facets 
-* Create and save basic graphics
-* Use additional libraries such as `plotly` to enhance the utility of graphics.
+* Combine genome annotations in *GRanges* objects with genomic data in bigWig files
+* Plot and visualise sequencing reads around genomic annotations
 </div>
 <br>
 
-# 7. Plot profiles across regions of interest
+# 6. Plot sequencing read profiles across genomic regions
 
-A common task in sequencing analysis is to plot profiles of particular signals across regions of interest. For instance ChIP-seq reads across the TSS of genes. You've probably guessed by now but there are many different ways to do this in R! Here we introduce *seqplots* which is one of the more intuitive packages. 
+A common task in sequencing analysis is to plot profiles of particular signals across regions of interest. For instance ChIP-seq reads across the TSS regions of genes. You've probably guessed by now but there are many different ways to do this in R! Here we will introduce **seqplots** which is one of the more intuitive packages. 
+
+First make sure you have the following datasets from previous lessons:
+
+```{r}
+library(GenomicRanges)
+library(genomation)
+gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
+            ranges = IRanges(start = sample(1000000,5) ,
+            width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))
+
+hg19.genes<-readBed("http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.strict.bed")
+hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
+```
+
+Load the **seqplots** library and create a list of features using the *hg19.pc.genes* object.
 
 ```{r}
 library(seqplots)
 
-##First we need to select a set of features to plot over, this could be a set of peak regions, genes or CpG Islands for instance.
+## First we need to select a set of features to plot over, this could be a set of peak regions, genes or CpG Islands for instance.
 
-##Here we will use our hg19 protein coding genes 
+## Here we will use our hg19 protein coding genes 
 features<-list(genes=hg19.pc.genes)
+```
 
-##Next we have a list of tracks. This is the data we intend to plot. We can supply the file path of bigWig files directly:
+Next we need to select the data that we want to plot, these are our tracks. These data are stored in **bigWig** files and represent coverage profiles of aligned reads across a genome. They have four columns: Chromosome, start_position, end_position, score. In this case, the score represents read depth.
+
+```{r}
+## Next we have a list of tracks. This is the data we intend to plot. We can supply the file paths of bigWig files directly:
 ##H3K4me3 ChIP-seq read profiles
-H3K4me3.chip<-"/homes/swebb/data/Shaun/training/ROI_workshop/data/H3K4me3.bw"
+H3K4me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K4me3.bw"
 ##H3K27me3 ChIP-seq read profiles
-H3K27me3.chip<-"/homes/swebb/data/Shaun/training/ROI_workshop/data/H3K27me3.bw"
+H3K27me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K27me3.bw"
 
 ##Combine data into a list of tracks
 tracks<-list(H3K4me3=H3K4me3.chip,H3K27me3=H3K27me3.chip)
