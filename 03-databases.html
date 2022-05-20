@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Genomic annotation and sequences</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="01-start.html">Getting Started</a>
+</li>
+<li>
+  <a href="02-gr.html">Genomic Ranges</a>
+</li>
+<li>
+  <a href="03-databases.html">Reference data</a>
+</li>
+<li>
+  <a href="04-annotation.html">Annotating genomic regions</a>
+</li>
+<li>
+  <a href="05-plots.html">Plotting genomic data</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Genomic annotation and sequences</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<div id="section" class="section level2">
+<h2></h2>
+<div class="objectives">
+<h2>
+<i class="far fa-check-square"></i> Learning Objectives
+</h2>
+<ul>
+<li>Fetch genomic annotation and sequence data from annotation packages</li>
+<li>Connect to external databases to download data</li>
+</ul>
+</div>
+<p><br></p>
+</div>
+<div id="fetching-data-from-annotation-packages-and-external-databases" class="section level1">
+<h1>3. Fetching data from annotation packages and external databases</h1>
+<p>There are several <a href="https://www.bioconductor.org/packages/release/data/annotation/">annotation packages</a> within Bioconductor with pre-built databases that are ready to use. These include gene annotations, transcript models and genome sequences, as well as micro-array probe annotations and functional annotations like KEGG (pathway maps) and GO (gene ontology terms).</p>
+<p>First, let’s make sure you have the following datasets from the GenomicRanges lesson:</p>
+<pre class="r"><code>library(GenomicRanges)
+library(genomation)
+gr2&lt;-GRanges(seqnames = paste0(&quot;chr&quot;,seq(2,10,2)),
+            ranges = IRanges(start = sample(1000000,5) ,
+            width = rep(500,5)),strand = c(rep(&quot;+&quot;,3),rep(&quot;-&quot;,2)),names=seq(1,5))
+
+hg19.genes&lt;-readBed(&quot;http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.strict.bed&quot;)
+hg19.pc.genes&lt;-subset(hg19.genes,hg19.genes$biotype==&quot;protein_coding&quot;)</code></pre>
+<hr />
+<div id="genomic-sequences-bsgenome" class="section level2">
+<h2>3.1 Genomic sequences (<em>BSgenome</em>)</h2>
+<p><em>BSgenome</em> packages contain genome reference sequences. We can use these to fetch the underlying sequences in GRanges objects and in conjunction with other functions that require sequence information e.g. motif discovery, calculating GC content etc.</p>
+<p>Load the <em>BSgenome</em> library for <strong>hg19</strong> and assign it to an object <em>hs</em>.</p>
+<pre class="r"><code>## Load the hg19 BSgenome object
+library(BSgenome.Hsapiens.UCSC.hg19)
+hs&lt;-BSgenome.Hsapiens.UCSC.hg19</code></pre>
+<p>The <em>Biostrings</em> package is automatically loaded along with any <em>BSgenome</em> and contains functions to work with genomic sequences.</p>
+<pre class="r"><code>## Fetch sequences for the genomic intervals in GRanges object gr2  
+gr2.seq&lt;-getSeq(hs,gr2)
+gr2.seq</code></pre>
+<pre><code>## DNAStringSet object of length 5:
+##     width seq
+## [1]   500 CAAACGTTACGGCTGCAGTGAGTGATAAGTGCCT...TGTGCAATGCTGTAGGACGTGTGGCCAAGCCAG
+## [2]   500 TTGCCTGGTGTTTGAACTTTATATTAATGGAATC...CCCAACTCCCCCCAAGTTCTCCTTTGCAGGCAC
+## [3]   500 GAACCACCATGCCTGGTCTCGAATTCTTTGTAAA...CAGGACAGCGTGTGGGGGAGCATTGAGCTGGGC
+## [4]   500 ATCACTTGAGCCCAGGAGGCAGACGCTGCAGTGA...AAAATCGGGTCACTCCCACCCGCATACTGCGCT
+## [5]   500 GAAAGATTATCTGAGAAGGGCTCTCGAGGAGAAA...TAAAAGAGCCTTTAAGTATTTTACCCTTTTCTA</code></pre>
+<pre class="r"><code>## Calculate the dinucleotide frequencies for each sequence
+dinucleotideFrequency(gr2.seq)</code></pre>
+<pre><code>##      AA AC AG AT CA CC CG CT GA GC GG GT TA TC TG TT
+## [1,] 59 28 52 19 42 32 13 23 41 34 31 30 16 15 41 23
+## [2,] 26 34 17 49 41 24  6 32 24 17 21 30 35 29 48 66
+## [3,] 45 27 32 40 37 20  5 31 28 22 38 29 34 25 41 45
+## [4,] 50 25 56 18 44 30 18 27 45 40 46 21  9 24 32 14
+## [5,] 53 16 44 28 21 22 13 32 43 27 38 31 25 23 43 40</code></pre>
+<p>All <em>BSgenome</em> databases contain a <em>seqinfo</em> object that describes the genome. We can add this information to any of our GRanges objects.</p>
+<pre class="r"><code>seqinfo(hs)</code></pre>
+<pre><code>## Seqinfo object with 298 sequences (2 circular) from hg19 genome:
+##   seqnames           seqlengths isCircular genome
+##   chr1                249250621      FALSE   hg19
+##   chr2                243199373      FALSE   hg19
+##   chr3                198022430      FALSE   hg19
+##   chr4                191154276      FALSE   hg19
+##   chr5                180915260      FALSE   hg19
+##   ...                       ...        ...    ...
+##   chr21_gl383580_alt      74652      FALSE   hg19
+##   chr21_gl383581_alt     116690      FALSE   hg19
+##   chr22_gl383582_alt     162811      FALSE   hg19
+##   chr22_gl383583_alt      96924      FALSE   hg19
+##   chr22_kb663609_alt      74013      FALSE   hg19</code></pre>
+<pre class="r"><code>## Let&#39;s update our human protein coding genes GRanges object
+seqinfo(hg19.pc.genes) &lt;- seqinfo(hs)
+hg19.pc.genes</code></pre>
+<pre><code>## GRanges object with 0 ranges and 2 metadata columns:
+##    seqnames    ranges strand |     score        name
+##       &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt; &lt;character&gt;
+##   -------
+##   seqinfo: 298 sequences (2 circular) from hg19 genome</code></pre>
+<pre class="r"><code>## Print out seqinfo
+seqinfo(hg19.pc.genes)</code></pre>
+<pre><code>## Seqinfo object with 298 sequences (2 circular) from hg19 genome:
+##   seqnames           seqlengths isCircular genome
+##   chr1                249250621      FALSE   hg19
+##   chr2                243199373      FALSE   hg19
+##   chr3                198022430      FALSE   hg19
+##   chr4                191154276      FALSE   hg19
+##   chr5                180915260      FALSE   hg19
+##   ...                       ...        ...    ...
+##   chr21_gl383580_alt      74652      FALSE   hg19
+##   chr21_gl383581_alt     116690      FALSE   hg19
+##   chr22_gl383582_alt     162811      FALSE   hg19
+##   chr22_gl383583_alt      96924      FALSE   hg19
+##   chr22_kb663609_alt      74013      FALSE   hg19</code></pre>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+1.Find the GC content for each sequence in gr2.seq. <strong>Hint</strong>: Look at the <em>letterFrequency</em> or <em>alphabetFrequency</em> functions.
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<pre class="r"><code>letterFrequency(gr2.seq,letters = &quot;GC&quot;,as.prob = T)</code></pre>
+<pre><code>##        G|C
+## [1,] 0.494
+## [2,] 0.392
+## [3,] 0.422
+## [4,] 0.542
+## [5,] 0.454</code></pre>
+</div>
+</details>
+2.Attempt to translate the sequences in <em>gr2.seq</em> into amino acid sequences using the <em>Biostrings</em> package.
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<pre class="r"><code>translate(gr2.seq)</code></pre>
+<pre><code>## AAStringSet object of length 5:
+##     width seq
+## [1]   166 QTLRLQ*VISAYLRRKRR*TCR*KT*AERCSHRG...YVLERAKKAPGHKTLKG*FTLCRVQCCRTCGQA
+## [2]   166 MPGV*TLY*WNHRT*FLYLWFLSFNFVSAKCIHV...NSVSLDNWTPCCESPPPR*SSTVPTPPKFSFAG
+## [3]   166 EPPCLVSNSL*MGCPCYFWLFILINKPKFSF*HL...GWS*VK*WYSKVSPGLRQVHADCRTACGGALSW
+## [4]   166 IT*AQEADAAVNYDGTTALQPGRQSKTLSEKKKK...SGSARRQGVPFPSQRKG*RTAPGKSGHSHPHTA
+## [5]   166 ERLSEKGSRGEKMSR*LLGGFQEVAWKVLKPFAW...QK*CKYNVLFLKTNCKKIFSFDAKRAFKYFTLF</code></pre>
+</div>
+</details>
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="annotation-maps-org.db" class="section level2">
+<h2>3.2 Annotation Maps (<em>org.db</em>)</h2>
+<p>The annotation databases within R are collectively known as AnnotationDb objects. They can all be queried using the keys(), keytypes(), columns() and select() functions. The <em>org.db</em> packages contain mappings between different gene identifiers and annotations for specific organsims.</p>
+<pre class="r"><code>## Load the human org.db object
+library(org.Hs.eg.db)
+
+## The columns() function allows you to see the annotations that can be extracted
+columns(org.Hs.eg.db)</code></pre>
+<pre><code>##  [1] &quot;ACCNUM&quot;       &quot;ALIAS&quot;        &quot;ENSEMBL&quot;      &quot;ENSEMBLPROT&quot;  &quot;ENSEMBLTRANS&quot;
+##  [6] &quot;ENTREZID&quot;     &quot;ENZYME&quot;       &quot;EVIDENCE&quot;     &quot;EVIDENCEALL&quot;  &quot;GENENAME&quot;    
+## [11] &quot;GO&quot;           &quot;GOALL&quot;        &quot;IPI&quot;          &quot;MAP&quot;          &quot;OMIM&quot;        
+## [16] &quot;ONTOLOGY&quot;     &quot;ONTOLOGYALL&quot;  &quot;PATH&quot;         &quot;PFAM&quot;         &quot;PMID&quot;        
+## [21] &quot;PROSITE&quot;      &quot;REFSEQ&quot;       &quot;SYMBOL&quot;       &quot;UCSCKG&quot;       &quot;UNIGENE&quot;     
+## [26] &quot;UNIPROT&quot;</code></pre>
+<pre class="r"><code>## The keytypes() are the columns that can be searched (in this case all of them)
+keytypes(org.Hs.eg.db)</code></pre>
+<pre><code>##  [1] &quot;ACCNUM&quot;       &quot;ALIAS&quot;        &quot;ENSEMBL&quot;      &quot;ENSEMBLPROT&quot;  &quot;ENSEMBLTRANS&quot;
+##  [6] &quot;ENTREZID&quot;     &quot;ENZYME&quot;       &quot;EVIDENCE&quot;     &quot;EVIDENCEALL&quot;  &quot;GENENAME&quot;    
+## [11] &quot;GO&quot;           &quot;GOALL&quot;        &quot;IPI&quot;          &quot;MAP&quot;          &quot;OMIM&quot;        
+## [16] &quot;ONTOLOGY&quot;     &quot;ONTOLOGYALL&quot;  &quot;PATH&quot;         &quot;PFAM&quot;         &quot;PMID&quot;        
+## [21] &quot;PROSITE&quot;      &quot;REFSEQ&quot;       &quot;SYMBOL&quot;       &quot;UCSCKG&quot;       &quot;UNIGENE&quot;     
+## [26] &quot;UNIPROT&quot;</code></pre>
+<p>To search for annotations we first need a set of ‘keys’. Here we will use the protein coding Ensembl gene identifiers from our GRanges object <em>hg19.pc.genes</em>.</p>
+<pre class="r"><code>## Choose a set of &quot;keys&quot; or search terms
+keys&lt;-hg19.pc.genes$name</code></pre>
+<p>We can then use the <em>select</em> function to extract information from the annotationDB package.</p>
+<pre class="r"><code>## Use the select() function to extract the EntrezID, RefSeq ID and gene symbols for all of these Ensembl gene identifiers
+anno&lt;-select(org.Hs.eg.db,columns=c(&quot;ENSEMBL&quot;,&quot;ENTREZID&quot;,&quot;SYMBOL&quot;,&quot;UNIPROT&quot;),keys=keys,keytype=&quot;ENSEMBL&quot;)
+anno</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ENSEMBL"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ENTREZID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["SYMBOL"],"name":[3],"type":["chr"],"align":["left"]},{"label":["UNIPROT"],"name":[4],"type":["chr"],"align":["left"]}],"data":[],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>There are also other annotation packages, such as <em>GO.db</em> which contains a set of annotation maps describing the entire Gene Ontology, that we can probe in the same manner as above.</p>
+<hr />
+</div>
+<div id="gene-models-txdb" class="section level2">
+<h2>3.3 Gene Models (<em>TxDB</em>)</h2>
+<p>We can import gene models from packages like <em>TxDB</em> which contain a database of transcript structures.</p>
+<p>Load the <em>TxDb.Hsapiens.UCSC.hg19.knownGene</em> library and assign it to an object called <em>txdb</em>.</p>
+<pre class="r"><code>## Load the Human hg19 transcript database
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb&lt;-TxDb.Hsapiens.UCSC.hg19.knownGene
+## See which columns can be returned
+columns(txdb)</code></pre>
+<pre><code>##  [1] &quot;CDSCHROM&quot;   &quot;CDSEND&quot;     &quot;CDSID&quot;      &quot;CDSNAME&quot;    &quot;CDSSTART&quot;  
+##  [6] &quot;CDSSTRAND&quot;  &quot;EXONCHROM&quot;  &quot;EXONEND&quot;    &quot;EXONID&quot;     &quot;EXONNAME&quot;  
+## [11] &quot;EXONRANK&quot;   &quot;EXONSTART&quot;  &quot;EXONSTRAND&quot; &quot;GENEID&quot;     &quot;TXCHROM&quot;   
+## [16] &quot;TXEND&quot;      &quot;TXID&quot;       &quot;TXNAME&quot;     &quot;TXSTART&quot;    &quot;TXSTRAND&quot;  
+## [21] &quot;TXTYPE&quot;</code></pre>
+<pre class="r"><code>## See which columns can be searched
+keytypes(txdb)</code></pre>
+<pre><code>## [1] &quot;CDSID&quot;    &quot;CDSNAME&quot;  &quot;EXONID&quot;   &quot;EXONNAME&quot; &quot;GENEID&quot;   &quot;TXID&quot;     &quot;TXNAME&quot;</code></pre>
+<pre class="r"><code>## Select columns from the first 10 entries in txdb
+select(txdb,keys = head(keys(txdb)),
+       columns=c(&#39;GENEID&#39;, &#39;TXCHROM&#39;, &#39;TXSTART&#39;, &#39;TXEND&#39;, &#39;TXID&#39;),
+       keytype=&quot;GENEID&quot;)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["GENEID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["TXID"],"name":[2],"type":["int"],"align":["right"]},{"label":["TXCHROM"],"name":[3],"type":["chr"],"align":["left"]},{"label":["TXSTART"],"name":[4],"type":["int"],"align":["right"]},{"label":["TXEND"],"name":[5],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"70455","3":"chr19","4":"58858172","5":"58864865"},{"1":"1","2":"70456","3":"chr19","4":"58859832","5":"58874214"},{"1":"10","2":"31944","3":"chr8","4":"18248755","5":"18258723"},{"1":"100","2":"72132","3":"chr20","4":"43248163","5":"43280376"},{"1":"1000","2":"65378","3":"chr18","4":"25530930","5":"25616539"},{"1":"1000","2":"65379","3":"chr18","4":"25530930","5":"25757445"},{"1":"10000","2":"7895","3":"chr1","4":"243651535","5":"244006584"},{"1":"10000","2":"7896","3":"chr1","4":"243663021","5":"244006584"},{"1":"10000","2":"7897","3":"chr1","4":"243663021","5":"244006886"},{"1":"100008586","2":"75890","3":"chrX","4":"49217763","5":"49233491"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>The <em>org.db</em> and <em>TxDB</em> databases are all centred upon Entrez gene IDs. However, we commonly use gene annotations from the Ensembl database. It is possible to make your own txdb objects.</p>
+<pre class="r"><code>## Fetch gene models from the Ensembl server
+#txdb.ens&lt;-makeTxDbFromEnsembl(organism = &quot;Homo sapiens&quot;,release=74)
+
+## We don&#39;t run this command in this workshop as it will require additional installation of RMaria database on your computer.</code></pre>
+<pre class="r"><code>## Create a txdb from a GFF file
+txdb.gff&lt;-makeTxDbFromGFF(file = &quot;http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Homo_sapiens.GRCh37.74.edited.gtf&quot;,format = &quot;gtf&quot;,organism = &quot;Homo sapiens&quot;)
+
+columns(txdb.gff)</code></pre>
+<pre><code>##  [1] &quot;CDSCHROM&quot;   &quot;CDSEND&quot;     &quot;CDSID&quot;      &quot;CDSNAME&quot;    &quot;CDSPHASE&quot;  
+##  [6] &quot;CDSSTART&quot;   &quot;CDSSTRAND&quot;  &quot;EXONCHROM&quot;  &quot;EXONEND&quot;    &quot;EXONID&quot;    
+## [11] &quot;EXONNAME&quot;   &quot;EXONRANK&quot;   &quot;EXONSTART&quot;  &quot;EXONSTRAND&quot; &quot;GENEID&quot;    
+## [16] &quot;TXCHROM&quot;    &quot;TXEND&quot;      &quot;TXID&quot;       &quot;TXNAME&quot;     &quot;TXSTART&quot;   
+## [21] &quot;TXSTRAND&quot;   &quot;TXTYPE&quot;</code></pre>
+<pre class="r"><code>##Let&#39;s look at the first few entries
+select(txdb.gff,keys = head(keys(txdb.gff)),
+       columns=c(&#39;GENEID&#39;, &#39;TXCHROM&#39;, &#39;TXSTART&#39;, &#39;TXEND&#39;, &#39;TXNAME&#39;),
+       keytype=&quot;GENEID&quot;)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["GENEID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["TXNAME"],"name":[2],"type":["chr"],"align":["left"]},{"label":["TXCHROM"],"name":[3],"type":["chr"],"align":["left"]},{"label":["TXSTART"],"name":[4],"type":["int"],"align":["right"]},{"label":["TXEND"],"name":[5],"type":["int"],"align":["right"]}],"data":[{"1":"ENSG00000000003","2":"ENST00000373020","3":"chrX","4":"99883667","5":"99891803"},{"1":"ENSG00000000003","2":"ENST00000496771","3":"chrX","4":"99887538","5":"99891686"},{"1":"ENSG00000000003","2":"ENST00000494424","3":"chrX","4":"99888439","5":"99894988"},{"1":"ENSG00000000005","2":"ENST00000373031","3":"chrX","4":"99839799","5":"99854882"},{"1":"ENSG00000000005","2":"ENST00000485971","3":"chrX","4":"99848621","5":"99852528"},{"1":"ENSG00000000419","2":"ENST00000371588","3":"chr20","4":"49551404","5":"49575087"},{"1":"ENSG00000000419","2":"ENST00000466152","3":"chr20","4":"49551404","5":"49575087"},{"1":"ENSG00000000419","2":"ENST00000371582","3":"chr20","4":"49551404","5":"49575092"},{"1":"ENSG00000000419","2":"ENST00000494752","3":"chr20","4":"49551433","5":"49562398"},{"1":"ENSG00000000419","2":"ENST00000371584","3":"chr20","4":"49551482","5":"49575058"},{"1":"ENSG00000000419","2":"ENST00000371583","3":"chr20","4":"49551490","5":"49575069"},{"1":"ENSG00000000419","2":"ENST00000413082","3":"chr20","4":"49552685","5":"49575069"},{"1":"ENSG00000000457","2":"ENST00000367771","3":"chr1","4":"169818772","5":"169863093"},{"1":"ENSG00000000457","2":"ENST00000367772","3":"chr1","4":"169821804","5":"169863076"},{"1":"ENSG00000000457","2":"ENST00000367770","3":"chr1","4":"169822215","5":"169858029"},{"1":"ENSG00000000457","2":"ENST00000423670","3":"chr1","4":"169823652","5":"169863408"},{"1":"ENSG00000000457","2":"ENST00000470238","3":"chr1","4":"169828260","5":"169863093"},{"1":"ENSG00000000460","2":"ENST00000498289","3":"chr1","4":"169631245","5":"169822226"},{"1":"ENSG00000000460","2":"ENST00000472795","3":"chr1","4":"169763871","5":"169773521"},{"1":"ENSG00000000460","2":"ENST00000413811","3":"chr1","4":"169764181","5":"169798955"},{"1":"ENSG00000000460","2":"ENST00000496973","3":"chr1","4":"169764184","5":"169773488"},{"1":"ENSG00000000460","2":"ENST00000481744","3":"chr1","4":"169764184","5":"169776978"},{"1":"ENSG00000000460","2":"ENST00000359326","3":"chr1","4":"169764190","5":"169823221"},{"1":"ENSG00000000460","2":"ENST00000466580","3":"chr1","4":"169764220","5":"169790860"},{"1":"ENSG00000000460","2":"ENST00000456684","3":"chr1","4":"169764220","5":"169795258"},{"1":"ENSG00000000460","2":"ENST00000459772","3":"chr1","4":"169764220","5":"169823221"},{"1":"ENSG00000000460","2":"ENST00000286031","3":"chr1","4":"169764550","5":"169823221"},{"1":"ENSG00000000938","2":"ENST00000374005","3":"chr1","4":"27938575","5":"27961788"},{"1":"ENSG00000000938","2":"ENST00000399173","3":"chr1","4":"27938803","5":"27952751"},{"1":"ENSG00000000938","2":"ENST00000545953","3":"chr1","4":"27938803","5":"27961727"},{"1":"ENSG00000000938","2":"ENST00000374004","3":"chr1","4":"27938811","5":"27950573"},{"1":"ENSG00000000938","2":"ENST00000374003","3":"chr1","4":"27939180","5":"27953080"},{"1":"ENSG00000000938","2":"ENST00000457296","3":"chr1","4":"27942025","5":"27952646"},{"1":"ENSG00000000938","2":"ENST00000475472","3":"chr1","4":"27949895","5":"27961645"},{"1":"ENSG00000000938","2":"ENST00000468038","3":"chr1","4":"27949918","5":"27952751"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="resources">
+<h2>
+<i class="fas fa-book"></i> Further Learning
+</h2>
+<p>There are several other methods to create and interact with txdb objects in the <em>GenomicFeatures</em> package including from GRanges objects or by connecting directly to the Ensembl, UCSC or BioMart databases.</p>
+<p>There is a good tutorial <a href="https://bioconductor.org/packages/release/bioc/vignettes/GenomicFeatures/inst/doc/GenomicFeatures.html">here</a>.</p>
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="fetching-online-data-biomart" class="section level2">
+<h2>3.4 Fetching online data (<em>biomaRt</em>)</h2>
+<p>We can also fetch data housed in online databases using the <em>biomaRt</em> package. Biomart is a web interface for downloading data from sites such as Ensembl. You can play around with the web version <a href="https://www.ensembl.org/biomart/martview/">here</a>.</p>
+<p>Load the <em>biomaRt</em> library and set it to use the <strong>ensembl</strong> biomart.</p>
+<pre class="r"><code>library(biomaRt)</code></pre>
+<pre class="r"><code>## Let&#39;s use the Ensembl bioMart.
+ensembl&lt;-useMart(&quot;ensembl&quot;)
+## Every species is a different dataset. Let&#39;s list the options.
+listDatasets(ensembl)</code></pre>
+<p>You will see that there are a lot of Ensembl databases. We will specifically select the human database.</p>
+<pre class="r"><code>## Select the human dataset within the Ensembl biomart
+ensembl&lt;-useMart(&quot;ensembl&quot;,dataset=&quot;hsapiens_gene_ensembl&quot;)</code></pre>
+<p>By default <em>useMart</em> will always select the most recent release of the Ensembl database and therefore the current genome assembly, in this case hg38. Because we have so far used data from the previous assembly (hg19/hg37) we must select an archived version of Ensembl. The archived versions are listed <a href="https://www.ensembl.org/info/website/archives/index.html">here</a>.</p>
+<pre class="r"><code>##use an archived version of biomart
+hg19.ensembl &lt;- useMart(biomart=&quot;ensembl&quot;,host=&quot;grch37.ensembl.org&quot;, path=&quot;/biomart/martservice&quot;, dataset=&quot;hsapiens_gene_ensembl&quot;)</code></pre>
+<p>We can build a biomart query with attributes, filters and values similar to the AnnotationDB objects columns, keytypes and keys used above.</p>
+<pre class="r"><code>##List the attributes and filters of the human dataset
+listAttributes(hg19.ensembl)</code></pre>
+<pre class="r"><code>listFilters(hg19.ensembl)</code></pre>
+<p>We can query biomart using <em>getBM</em>. Let’s extract annotations for the gene MeCP2.</p>
+<pre class="r"><code>## Create biomart query for MeCP2
+getBM(attributes =c(&quot;chromosome_name&quot;,&quot;start_position&quot;,&quot;end_position&quot;,&quot;hgnc_symbol&quot;,&quot;ensembl_gene_id&quot;,&quot;strand&quot;),
+      filters = &quot;ensembl_gene_id&quot;,
+      values = &quot;ENSG00000169057&quot;, 
+      mart = hg19.ensembl)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["chromosome_name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["start_position"],"name":[2],"type":["int"],"align":["right"]},{"label":["end_position"],"name":[3],"type":["int"],"align":["right"]},{"label":["hgnc_symbol"],"name":[4],"type":["chr"],"align":["left"]},{"label":["ensembl_gene_id"],"name":[5],"type":["chr"],"align":["left"]},{"label":["strand"],"name":[6],"type":["int"],"align":["right"]}],"data":[{"1":"X","2":"153287024","3":"153363212","4":"MECP2","5":"ENSG00000169057","6":"-1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>If we run the same query using the current version of Ensembl you can see that the co-ordinates differ. This why it’s important to ensure you are always working with a consistent reference assembly!</p>
+<pre class="r"><code>## Run the query with the current ensembl hg38 database
+getBM(attributes =c(&quot;chromosome_name&quot;,&quot;start_position&quot;,&quot;end_position&quot;,&quot;hgnc_symbol&quot;,&quot;ensembl_gene_id&quot;,&quot;strand&quot;),
+      filters = &quot;ensembl_gene_id&quot;,
+      values = &quot;ENSG00000169057&quot;, 
+      mart = ensembl)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["chromosome_name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["start_position"],"name":[2],"type":["int"],"align":["right"]},{"label":["end_position"],"name":[3],"type":["int"],"align":["right"]},{"label":["hgnc_symbol"],"name":[4],"type":["chr"],"align":["left"]},{"label":["ensembl_gene_id"],"name":[5],"type":["chr"],"align":["left"]},{"label":["strand"],"name":[6],"type":["int"],"align":["right"]}],"data":[{"1":"X","2":"154021573","3":"154137103","4":"MECP2","5":"ENSG00000169057","6":"-1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<hr />
+</div>
+<div id="annotation-hubs-annotationhub" class="section level2">
+<h2>3.5 Annotation hubs (<em>AnnotationHub</em>)</h2>
+<p><em>AnnotationHub</em> is another source of data within R. You can use the annotation hub to retrieve R objects and text files for multiple datasets and projects including Ensembl, UCSC, Broad Institute and the Epigenetics Roadmap project. You can even create your own AnnotationHub to provide access to your datasets.</p>
+<p>Load the <em>AnnotationHub</em> library and create a hub connection called <em>ah</em>. It may ask you to create a cache folder in your home directory to store files locally. This will speed up access to this data in future.</p>
+<pre class="r"><code>library(AnnotationHub)
+ah = AnnotationHub()
+##View all of the data providers within AnnotationHub 
+unique(ah$dataprovider)</code></pre>
+<pre><code>##  [1] &quot;UCSC&quot;                                 
+##  [2] &quot;Ensembl&quot;                              
+##  [3] &quot;RefNet&quot;                               
+##  [4] &quot;Inparanoid8&quot;                          
+##  [5] &quot;NHLBI&quot;                                
+##  [6] &quot;ChEA&quot;                                 
+##  [7] &quot;Pazar&quot;                                
+##  [8] &quot;NIH Pathway Interaction Database&quot;     
+##  [9] &quot;Haemcode&quot;                             
+## [10] &quot;BroadInstitute&quot;                       
+## [11] &quot;PRIDE&quot;                                
+## [12] &quot;Gencode&quot;                              
+## [13] &quot;CRIBI&quot;                                
+## [14] &quot;Genoscope&quot;                            
+## [15] &quot;MISO, VAST-TOOLS, UCSC&quot;               
+## [16] &quot;UWashington&quot;                          
+## [17] &quot;Stanford&quot;                             
+## [18] &quot;dbSNP&quot;                                
+## [19] &quot;BioMart&quot;                              
+## [20] &quot;GeneOntology&quot;                         
+## [21] &quot;KEGG&quot;                                 
+## [22] &quot;URGI&quot;                                 
+## [23] &quot;EMBL-EBI&quot;                             
+## [24] &quot;MicrosporidiaDB&quot;                      
+## [25] &quot;FungiDB&quot;                              
+## [26] &quot;TriTrypDB&quot;                            
+## [27] &quot;ToxoDB&quot;                               
+## [28] &quot;AmoebaDB&quot;                             
+## [29] &quot;PlasmoDB&quot;                             
+## [30] &quot;PiroplasmaDB&quot;                         
+## [31] &quot;CryptoDB&quot;                             
+## [32] &quot;TrichDB&quot;                              
+## [33] &quot;GiardiaDB&quot;                            
+## [34] &quot;The Gene Ontology Consortium&quot;         
+## [35] &quot;ENCODE Project&quot;                       
+## [36] &quot;SchistoDB&quot;                            
+## [37] &quot;NCBI/UniProt&quot;                         
+## [38] &quot;GENCODE&quot;                              
+## [39] &quot;http://www.pantherdb.org&quot;             
+## [40] &quot;RMBase v2.0&quot;                          
+## [41] &quot;snoRNAdb&quot;                             
+## [42] &quot;tRNAdb&quot;                               
+## [43] &quot;NCBI&quot;                                 
+## [44] &quot;DrugAge, DrugBank, Broad Institute&quot;   
+## [45] &quot;DrugAge&quot;                              
+## [46] &quot;DrugBank&quot;                             
+## [47] &quot;Broad Institute&quot;                      
+## [48] &quot;HMDB, EMBL-EBI, EPA&quot;                  
+## [49] &quot;STRING&quot;                               
+## [50] &quot;OMA&quot;                                  
+## [51] &quot;OrthoDB&quot;                              
+## [52] &quot;ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/&quot;</code></pre>
+<p>We can use collections of search terms to query the annotation hub. Let’s find the Ensembl hg19 gene annotations first.</p>
+<pre class="r"><code>query(ah,c(&quot;GRCh37&quot;))[1:10]</code></pre>
+<pre><code>## AnnotationHub with 10 records
+## # snapshotDate(): 2020-10-27
+## # $dataprovider: Ensembl, dbSNP
+## # $species: Homo sapiens
+## # $rdataclass: GRanges, VcfFile
+## # additional mcols(): taxonomyid, genome, description,
+## #   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,
+## #   rdatapath, sourceurl, sourcetype 
+## # retrieve records with, e.g., &#39;object[[&quot;AH7558&quot;]]&#39; 
+## 
+##             title                              
+##   AH7558  | Homo_sapiens.GRCh37.70.gtf         
+##   AH7619  | Homo_sapiens.GRCh37.69.gtf         
+##   AH7666  | Homo_sapiens.GRCh37.71.gtf         
+##   AH7726  | Homo_sapiens.GRCh37.72.gtf         
+##   AH7790  | Homo_sapiens.GRCh37.73.gtf         
+##   AH8753  | Homo_sapiens.GRCh37.74.gtf         
+##   AH10684 | Homo_sapiens.GRCh37.75.gtf         
+##   AH57956 | clinvar_20160203.vcf.gz            
+##   AH57957 | clinvar_20160203_papu.vcf.gz       
+##   AH57958 | common_and_clinical_20160203.vcf.gz</code></pre>
+<p>Let’s get version 74 of the Ensembl database as a GRanges object.</p>
+<pre class="r"><code>Ensembl.hg19.74.gr&lt;-ah[[&quot;AH8753&quot;]]</code></pre>
+<p>If we wanted to, we could create a <em>txdb</em> object with <em>makeTxDbFromGRanges</em>. Let’s download a different dataset from the annotation hub.</p>
+<p>The EpigenomeRoadMap data is hosted online and can be searched <a href="https://egg2.wustl.edu/roadmap/web_portal">here</a>. The data is also provided by the Broad Institute as an annotation hub.</p>
+<pre class="r"><code>## Find H3K4me3 peak files from the EpigenomeRoadMap datasets for experiment E010 (Cultured neuronal cells).
+epiFiles &lt;- query(ah, c(&quot;EpigenomeRoadMap&quot;,&quot;E010&quot;,&quot;narrowPeak&quot;,&quot;H3K4me3&quot;))
+epiFiles</code></pre>
+<pre><code>## AnnotationHub with 1 record
+## # snapshotDate(): 2020-10-27
+## # names(): AH30032
+## # $dataprovider: BroadInstitute
+## # $species: Homo sapiens
+## # $rdataclass: GRanges
+## # $rdatadateadded: 2015-05-06
+## # $title: E010-H3K4me3.narrowPeak.gz
+## # $description: Narrow ChIP-seq peaks for consolidated epigenomes from Epige...
+## # $taxonomyid: 9606
+## # $genome: hg19
+## # $sourcetype: BED
+## # $sourceurl: http://egg2.wustl.edu/roadmap/data/byFileType/peaks/consolidat...
+## # $sourcesize: 721817
+## # $tags: c(&quot;EpigenomeRoadMap&quot;, &quot;peaks&quot;, &quot;consolidated&quot;, &quot;narrowPeak&quot;,
+## #   &quot;E010&quot;, &quot;ES-deriv&quot;, &quot;ESDR.H9.NEUR&quot;, &quot;H9 Derived Neuron Cultured
+## #   Cells&quot;) 
+## # retrieve record with &#39;object[[&quot;AH30032&quot;]]&#39;</code></pre>
+<p>There is a single hit for this search with the name <em>AH30032</em>. Let’s import the H3K4me3 ChIP-seq peaks as GRanges.</p>
+<pre class="r"><code>##These files will be imported as GRanges objects
+H3K4me3&lt;-epiFiles[[&quot;AH30032&quot;]]
+H3K4me3</code></pre>
+<pre><code>## GRanges object with 37783 ranges and 6 metadata columns:
+##           seqnames              ranges strand |        name     score
+##              &lt;Rle&gt;           &lt;IRanges&gt;  &lt;Rle&gt; | &lt;character&gt; &lt;numeric&gt;
+##       [1]     chr2 200775200-200777693      * |      Rank_1      2708
+##       [2]    chr10   30636343-30638665      * |      Rank_2      2681
+##       [3]     chr4 142051175-142055073      * |      Rank_3      2660
+##       [4]    chr14   71065888-71067491      * |      Rank_4      2634
+##       [5]    chr21   30671163-30673514      * |      Rank_5      2590
+##       ...      ...                 ...    ... .         ...       ...
+##   [37779]     chr8   71156568-71156757      * |  Rank_37779        20
+##   [37780]     chrX     9868663-9868855      * |  Rank_37780        20
+##   [37781]     chr2 171570785-171570924      * |  Rank_37781        20
+##   [37782]     chr1 162666379-162666679      * |  Rank_37782        20
+##   [37783]     chr7   27170047-27170196      * |  Rank_37783        20
+##           signalValue    pValue    qValue      peak
+##             &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;
+##       [1]     65.7391   270.837   261.347      1370
+##       [2]     58.6667   268.179   259.533      1607
+##       [3]     59.5730   266.007   257.693      1972
+##       [4]     60.2837   263.434   255.692      1321
+##       [5]     57.9809   259.074   251.621       769
+##       ...         ...       ...       ...       ...
+##   [37779]     1.85714   2.05416   0.20999         2
+##   [37780]     2.13285   2.04594   0.20241        83
+##   [37781]     2.18182   2.03936   0.19594        26
+##   [37782]     1.66667   2.03201   0.18894        50
+##   [37783]     2.15983   2.00804   0.16532        82
+##   -------
+##   seqinfo: 298 sequences (2 circular) from hg19 genome</code></pre>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+<p>Can you get the sequences of the 10 longest exons in the Mouse Ensembl gene models?</p>
+<p><strong>Hints:</strong></p>
+<ul>
+<li>There is a gtf file from Ensembl available at the URL below, or you could try to fetch the gene models using <em>AnnotationHub</em>. “<a href="http://bifx-core.bio.ed.ac.ukgenomes/mouse/mm10/annotation/Mus_musculus.GRCm38.78.edited.gtf" class="uri">http://bifx-core.bio.ed.ac.ukgenomes/mouse/mm10/annotation/Mus_musculus.GRCm38.78.edited.gtf</a>”</li>
+<li>Use the <em>exons</em> function to extract exons from a <em>txdb</em> object.</li>
+<li>Reorder the exons by <em>width</em> with the <em>order</em> function.</li>
+<li>Load the mm10 <em>BSgenome</em> library and get the reference sequence using the <em>getSeq</em> function.</li>
+<li>Use the <em>writeXStringSet</em> function to export sequences in fasta format.</li>
+</ul>
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<pre class="r"><code>## create a txdb object from the gtf file downloaded from Ensembl
+txdb.mm10&lt;-makeTxDbFromGFF(file = &quot;http://bifx-core.bio.ed.ac.uk/genomes/mouse/mm10/annotation/Mus_musculus.GRCm38.78.edited.gtf&quot;)
+## Get exons as GRanges
+exons&lt;-exons(txdb.mm10)
+## Sort by width
+exons.sorted&lt;-exons[order(width(exons),decreasing=T),]
+## Select the top 10
+top.exons&lt;-exons.sorted[1:10,]
+## Set the GRanges names to the exon_id
+names(top.exons)&lt;-top.exons$exon_id
+## Get the mm10 sequence
+library(BSgenome.Mmusculus.UCSC.mm10)
+mm10&lt;-BSgenome.Mmusculus.UCSC.mm10
+## Fetch exon sequences
+top.exons.seq&lt;-getSeq(mm10,top.exons)
+## Output sequences as a fasta file
+writeXStringSet(top.exons.seq, &#39;long_exons.fa&#39;)
+top.exons.seq</code></pre>
+<pre><code>## DNAStringSet object of length 10:
+##      width seq                                              names               
+##  [1] 84395 AGGAGGAACAGTTGCCTCAGCAC...GGAAAATCATTTTTGCAGCTAC 202265
+##  [2] 74456 GGCCAAAAAGCAAGCTTAATTAG...AAAATCTATTCCTCTGATTCTT 93241
+##  [3] 52270 GTACTTGGACTAGATGGCAGTTC...AAAAGCCATGAGGAAAAAGATA 313921
+##  [4] 40044 GCGTGTGCAGCCTGGTGCCTAAG...ACTCATTAAAAAACATTTTAAC 23720
+##  [5] 24280 GTGAGAAGCCCCACCAGTGCAGC...GTTTGAATATGAAGGAATAATT 355534
+##  [6] 20771 AGGAGTTAGTGACAAGGAGGGCT...ACGTGAGCAGGAAAAAGCAAAA 398118
+##  [7] 20717 GGTATCTACAGCTGTATCCACGG...ACCTACCACAAATTATCAGGGT 169422
+##  [8] 17497 AGCGGGGATGATGAGGACTACCA...ATAAAGCTCTTTATTAACCCTG 393364
+##  [9] 17485 GTAGAAGAGTCAGCAATGATGGG...AATAAAACGTTTAATACTCTTA 28144
+## [10] 17106 ATCCCCCAGGACCACCTTCAAAT...AAGGAAGGAGTCAAAATAACAG 60509</code></pre>
+</div>
+</details>
+</div>
+<p><br></p>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key points
+</h2>
+<div id="section-1" class="section level2">
+<h2></h2>
+<ul>
+<li>Bioconductor has specialised packages for working with genomics data in R.</li>
+<li>Genomic sequences, annotations and datasets can be imported by various means.</li>
+<li>It is possible to create your own annotation objects.</li>
+</ul>
+</div>
+</div>
+<p><br></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
