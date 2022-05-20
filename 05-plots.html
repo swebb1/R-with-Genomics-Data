@@ -11,7 +11,7 @@
 
 
 
-<title>Getting Started</title>
+<title>Plotting genomic data</title>
 
 <script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -309,121 +309,134 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Getting Started</h1>
+<h1 class="title toc-ignore">Plotting genomic data</h1>
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#plot-sequencing-read-profiles-across-genomic-regions">6. Plot sequencing read profiles across genomic regions</a></li>
+<li><a href="#summary">Summary</a></li>
+</ul>
+</div>
 
 <head>
 <script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
 </head>
 <hr />
-<p>We recommend using <a href="https://rstudio.com/">RStudio</a> for this workshop. <a href="https://www.rstudio.com/">RStudio</a> is an Integrated Development Environment (IDE) for R. It can be accessed in several ways. Download <a href="https://rstudio.com/">RStudio</a> and install it on your own computer.</p>
-<p><br></p>
-<div id="using-rstudio" class="section level2">
-<h2>Using RStudio</h2>
-<hr />
-<div class="row">
-<div class="col-md-6">
-<p>The are 4 main panes, each with several tabs:</p>
-<ul>
-<li><strong>Console</strong> (bottom left)
-<ul>
-<li>Here you can type commands into R</li>
-<li>Additional tabs may include a terminal and script outputs</li>
-</ul></li>
-<li><strong>Editor</strong> (top left)
-<ul>
-<li>Open and view files</li>
-<li>These can be raw txt, scripts or markdown</li>
-</ul></li>
-<li><strong>Environment</strong> (top right)
-<ul>
-<li>Objects you have stored</li>
-<li>Commands you have typed</li>
-<li>Additional tabs for version control, database and website building…</li>
-</ul></li>
-<li><strong>Files and output</strong> (bottom right)
-<ul>
-<li>System files (on the computer/server you are working on)</li>
-<li>Output from plots or applications</li>
-<li>Packages available</li>
-<li>Help pages</li>
-</ul></li>
-</ul>
-</div>
-<div class="col-md-6">
-<p><img src="images/rstudio-windows.png" /></p>
-</div>
-</div>
-<p>You can cutomise the appearance of RStudion under the Tools -&gt; Global Options… menu.</p>
-<p><br></p>
-<div id="setting-up-a-new-project" class="section level3">
-<h3><strong>Setting up a new project</strong></h3>
-<p>There is a drop-down <strong>project</strong> menu at the top right of RStudio. Click this, select “New Project…” and create one in a new directory. Make sure you have write permission for the directory you choose.</p>
-<p>Once you have done this, this will be your <strong>working directory</strong>. Files will be saved (or loaded from) here by default unless you specify a full path. You can change your working directory under the <strong>session</strong> menu at the top.</p>
-<p>Using Rstudio has the advantage that everything you do can be saved between RStudio sessions.</p>
-<p><br></p>
-</div>
-</div>
-<div id="running-commands" class="section level2">
-<h2>Running commands</h2>
-<hr />
-<p>You can work in 3 different ways in RStudio.</p>
-<ul>
-<li>Use the <strong>console</strong> to run commands.</li>
-<li>Create a new <strong>R script</strong> to save your commands as you go.</li>
-<li>Create an <strong>R markdown</strong> file to generate web pages or pdf documents from your analyses.</li>
-</ul>
-<p>Commands can be typed directly into the console, but in order to keep track it’s best to write them into a script as you go (File-&gt;New File-&gt;R Script). From here you can use a shortcut to run the command on the line where your cursor is:</p>
-<ul>
-<li><kbd>Alt</kbd> + <kbd>Enter</kbd> to keep the cursor on the same line</li>
-<li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to move to the next line</li>
-</ul>
-<p>You can also use the <kbd>Tab</kbd> key to autocomplete names of functions and objects as you type them into your script.</p>
-<p><strong>Hint:</strong> When using the console, the Up/Down arrow keys can be use to cycle through previous commands.</p>
-<p>In the console you should always see a <code>&gt;</code> prompt, if you can’t see this R may still be working. There is a red Stop light at the top right of the console when a command is running. If you see a <code>+</code> instead of <code>&gt;</code>, R is waiting for more input. Sometimes this means you have forgotten to close a bracket or quotation.</p>
-<p>Using <strong>R Markdown</strong> is a great way to annotate your code and present it at the end. It’s worth learning but will add a further level of complication for novice users.</p>
-<p><br></p>
-</div>
-<div id="installing-libraries" class="section level2">
-<h2>Installing libraries</h2>
-<hr />
-<p>Libraries provide additional functions in R and can be downloaded from several sources:</p>
-<ul>
-<li><a href="https://cran.r-project.org/">CRAN</a> is the Comprehensive R Archive Network and hosts the majority of generic R packages.</li>
-<li><a href="https://www.bioconductor.org/">Bioconductor</a> is a repository of biology specific packages.</li>
-<li>Third party tools are often hosted on <a href="https://www.github.com">github</a>.</li>
-</ul>
-<p>Install the packages we need for these lesssons by running the code below in the R console:</p>
-<pre class="r"><code>#install from CRAN with install.packages()
-install.packages(c(&quot;ggplot2&quot;, &quot;ggthemes&quot;, &quot;plotly&quot;,&quot;ggpubr&quot;, &quot;ggrepel&quot;,&quot;viridis&quot;,&quot;RColorBrewer&quot;,&quot;ggsci&quot;,&quot;tidyverse&quot;,&quot;gghighlight&quot;,&quot;rstatix&quot;))
-
-#install from bioconductor with BiocManager
-if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
-    install.packages(&quot;BiocManager&quot;)
-BiocManager::install(c(&quot;DESeq2&quot;,&quot;genomation&quot;))
-
-#install from github with the devtools package
-install.packages(&quot;devtools&quot;)
-devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
-<p>To load a specific package within an R session, use the “library” function:</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<br>
-<div class="key-points">
-<h2>
-<i class="fas fa-thumbtack"></i> How to follow this tutorial
-</h2>
 <div id="section" class="section level2">
 <h2></h2>
+<div class="objectives">
+<h2>
+<i class="far fa-check-square"></i> Learning Objectives
+</h2>
 <ul>
-<li>Create a new project in RStudio</li>
-<li>Install the required libraries</li>
-<li>Open a new R script (or R markdown file for advanced users)</li>
-<li>It will be best to work with the tutorial and RStudio open together so you can easily switch between the two. Working on a wide split-screen or multiple desktops is the best setup.</li>
-<li>I recommend typing out commands rather than copy-and-pasting if you want to learn. Remember you can use the <kbd>Tab</kbd> key to save on typing!</li>
+<li>Combine genome annotations in <em>GRanges</em> objects with genomic data in bigWig files</li>
+<li>Plot and visualise sequencing reads around genomic annotations</li>
 </ul>
 </div>
+<p><br></p>
+</div>
+<div id="plot-sequencing-read-profiles-across-genomic-regions" class="section level1">
+<h1>6. Plot sequencing read profiles across genomic regions</h1>
+<p>A common task in sequencing analysis is to plot profiles of particular signals across regions of interest. For instance ChIP-seq reads across the TSS regions of genes. You’ve probably guessed by now but there are many different ways to do this in R! Here we will introduce <strong>seqplots</strong> which is one of the more intuitive packages.</p>
+<p>First make sure you have the following datasets from previous lessons:</p>
+<pre class="r"><code>#library(GenomicRanges)
+#library(genomation)
+#gr2&lt;-GRanges(seqnames = paste0(&quot;chr&quot;,seq(2,10,2)),
+#            ranges = IRanges(start = sample(1000000,5) ,
+#            width = rep(500,5)),strand = c(rep(&quot;+&quot;,3),rep(&quot;-&quot;,2)),names=seq(1,5))
+
+#hg19.genes&lt;-readGeneric(&quot;http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed&quot;,chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
+#hg19.pc.genes&lt;-subset(hg19.genes,hg19.genes$biotype==&quot;protein_coding&quot;)</code></pre>
+<p>Load the <strong>seqplots</strong> library and create a list of features using the <em>hg19.pc.genes</em> object.</p>
+<pre class="r"><code>#library(seqplots)
+
+## First we need to select a set of features to plot over, this could be a set of peak regions, genes or CpG Islands for instance.
+
+## Here we will use our hg19 protein coding genes 
+#features&lt;-list(genes=hg19.pc.genes)</code></pre>
+<p>Next we need to select the data that we want to plot, these are our tracks. These data are stored in <strong>bigWig</strong> files and represent coverage profiles of aligned reads across a genome. They have four columns: Chromosome, start_position, end_position, score. In this case, the score represents read depth.</p>
+<pre class="r"><code>## Next we have a list of tracks. This is the data we intend to plot. We can supply the file paths of bigWig files directly:
+##H3K4me3 ChIP-seq read profiles
+#H3K4me3.chip&lt;-&quot;http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K4me3.bw&quot;
+##H3K27me3 ChIP-seq read profiles
+#H3K27me3.chip&lt;-&quot;http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K27me3.bw&quot;
+
+##Combine data into a list of tracks
+#tracks&lt;-list(H3K4me3=H3K4me3.chip,H3K27me3=H3K27me3.chip)</code></pre>
+<p>We build an array of values around the feature using getPlotSetArray(). The variable type has a few options:</p>
+<ul>
+<li>pf #Point Feature
+<ul>
+<li>Align the start of each feature e.g. TSS</li>
+</ul></li>
+<li>ef #End Feature
+<ul>
+<li>Align the end of each feature e.g TES</li>
+</ul></li>
+<li>mf #Midpoint Feature
+<ul>
+<li>Align the midpoints of each feature</li>
+</ul></li>
+<li>af #Anchored Feature
+<ul>
+<li>Align the start and ends of each feature</li>
+<li>Features are normalised to a standard length with the xanchored parameter</li>
+</ul></li>
+</ul>
+<pre class="r"><code>##Calculate the mean values 3kb either side of the TSS in 100b bins
+#gene.array&lt;-getPlotSetArray(tracks=tracks, features=hg19.pc.genes,refgenome = &quot;hg19&quot;,bin = 100,ignore_strand = F,xmin = 3000,xmax=3000,xanchored=3000,type = &quot;af&quot;,stat = &quot;mean&quot;)
+#plotAverage(gene.array,xlab = &quot;Gene&quot;,error.estimates = T,ylab = &quot;Read depth&quot;)</code></pre>
+<p>This is an average plot of ~20000 genes so perhaps not that informative. It may be more interesting to look at different classes of genes, for instance those that are highly or lowly expressed.</p>
+<pre class="r"><code>##Read in gene expression values calculated from RNA-seq data
+#exp&lt;-read.table(&quot;/homes/swebb/data/Shaun/training/ROI_workshop/data/rna-seq_expression.tab&quot;,header=T,sep=&quot;\t&quot;)
+##Remove genes with no expression: != means not equal to in R.
+#exp&lt;-subset(exp,exp$Expression.tpm!=0)
+##Order by expression and take the top 2000 gene IDs
+#high&lt;-exp[order(exp$Expression.tpm,decreasing = T),][1:2000,&quot;geneID&quot;]
+#low&lt;-exp[order(exp$Expression.tpm,decreasing = F),][1:2000, &quot;geneID&quot;]
+
+##Subset the GRanges objects 
+#high.gr&lt;-subset(hg19.pc.genes,hg19.pc.genes$name %in% high)
+#low.gr&lt;-subset(hg19.pc.genes,hg19.pc.genes$name %in% low)
+
+##Create a new features list
+#features2&lt;-list(high=high.gr,low=low.gr)
+##Generate a new array. This time we will just plot around the TSS.
+#gene.exp.array&lt;-getPlotSetArray(tracks=tracks, features=features2,refgenome = &quot;hg19&quot;,bin = 100,ignore_strand = F,type = &quot;pf&quot;,xmin = 3000,xmax=3000,add_heatmap = T,stat = &quot;mean&quot;)
+
+#plotAverage(gene.exp.array,xlab=&quot;Gene&quot;,ylab=&quot;Read Depth&quot;)</code></pre>
+<p>Now we can see clear differences in Chromatin marks between genes grouped by expression level. We can also use seqplots to create heatmaps.</p>
+<pre class="r"><code>#library(RColorBrewer)
+#cols&lt;-brewer.pal(n = 9,name = &quot;Set3&quot;)
+#plotHeatmap(gene.exp.array[c(1,2)],clusters = F)</code></pre>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>This is just a brief tour of some of the packages available for downstream analysis of genomic data. Full documentation is available online for all Bioconductor packages. Please come and see the Bioinformatics Core Facility if you need any help or further training.</p>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+<p>Spend the remaining time playing around with the different ggplot options and see if you can create an interesting and appealing visualisation with a dataset of your choice. Use the ggplot cheatsheet or the <a href="https://www.r-graph-gallery.com/index.html">R graph gallery</a> for inspiration!</p>
+</div>
+<p><br></p>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key points
+</h2>
+<ul>
+<li>ggplot2 builds graphics layer upon layer</li>
+<li>Bind a dataset to your ggplot function and map values to visual aesthetics</li>
+<li>Apply different geometries to create different graphics</li>
+<li>Use colours, fills, gradients, shapes etc. to represent multiple variables</li>
+<li>Use themes to alter the appearance of a graphic</li>
+<li>Generate sublots with facetting</li>
+<li>Save your graphics with <code>ggsave</code></li>
+<li>There are many additional libraries that extend the functionality of ggplot</li>
+</ul>
 </div>
 <p><br></p>
 </div>

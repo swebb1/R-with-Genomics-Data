@@ -36,25 +36,25 @@ A common task in sequencing analysis is to plot profiles of particular signals a
 First make sure you have the following datasets from previous lessons:
 
 ```{r}
-library(GenomicRanges)
-library(genomation)
-gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
-            ranges = IRanges(start = sample(1000000,5) ,
-            width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))
+#library(GenomicRanges)
+#library(genomation)
+#gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
+#            ranges = IRanges(start = sample(1000000,5) ,
+#            width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))
 
-hg19.genes<-readGeneric("http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed",chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
-hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
+#hg19.genes<-readGeneric("http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed",chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
+#hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
 ```
 
 Load the **seqplots** library and create a list of features using the *hg19.pc.genes* object.
 
 ```{r}
-library(seqplots)
+#library(seqplots)
 
 ## First we need to select a set of features to plot over, this could be a set of peak regions, genes or CpG Islands for instance.
 
 ## Here we will use our hg19 protein coding genes 
-features<-list(genes=hg19.pc.genes)
+#features<-list(genes=hg19.pc.genes)
 ```
 
 Next we need to select the data that we want to plot, these are our tracks. These data are stored in **bigWig** files and represent coverage profiles of aligned reads across a genome. They have four columns: Chromosome, start_position, end_position, score. In this case, the score represents read depth.
@@ -62,12 +62,12 @@ Next we need to select the data that we want to plot, these are our tracks. Thes
 ```{r}
 ## Next we have a list of tracks. This is the data we intend to plot. We can supply the file paths of bigWig files directly:
 ##H3K4me3 ChIP-seq read profiles
-H3K4me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K4me3.bw"
+#H3K4me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K4me3.bw"
 ##H3K27me3 ChIP-seq read profiles
-H3K27me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K27me3.bw"
+#H3K27me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K27me3.bw"
 
 ##Combine data into a list of tracks
-tracks<-list(H3K4me3=H3K4me3.chip,H3K27me3=H3K27me3.chip)
+#tracks<-list(H3K4me3=H3K4me3.chip,H3K27me3=H3K27me3.chip)
 ```  
   
 We build an array of values around the feature using getPlotSetArray(). The variable type has a few options:
@@ -85,39 +85,39 @@ We build an array of values around the feature using getPlotSetArray(). The vari
   
 ```{r}
 ##Calculate the mean values 3kb either side of the TSS in 100b bins
-gene.array<-getPlotSetArray(tracks=tracks, features=hg19.pc.genes,refgenome = "hg19",bin = 100,ignore_strand = F,xmin = 3000,xmax=3000,xanchored=3000,type = "af",stat = "mean")
-plotAverage(gene.array,xlab = "Gene",error.estimates = T,ylab = "Read depth")
+#gene.array<-getPlotSetArray(tracks=tracks, features=hg19.pc.genes,refgenome = "hg19",bin = 100,ignore_strand = F,xmin = 3000,xmax=3000,xanchored=3000,type = "af",stat = "mean")
+#plotAverage(gene.array,xlab = "Gene",error.estimates = T,ylab = "Read depth")
 ```
 
 This is an average plot of ~20000 genes so perhaps not that informative. It may be more interesting to look at different classes of genes, for instance those that are highly or lowly expressed.
 
 ```{r}
 ##Read in gene expression values calculated from RNA-seq data
-exp<-read.table("/homes/swebb/data/Shaun/training/ROI_workshop/data/rna-seq_expression.tab",header=T,sep="\t")
+#exp<-read.table("/homes/swebb/data/Shaun/training/ROI_workshop/data/rna-seq_expression.tab",header=T,sep="\t")
 ##Remove genes with no expression: != means not equal to in R.
-exp<-subset(exp,exp$Expression.tpm!=0)
+#exp<-subset(exp,exp$Expression.tpm!=0)
 ##Order by expression and take the top 2000 gene IDs
-high<-exp[order(exp$Expression.tpm,decreasing = T),][1:2000,"geneID"]
-low<-exp[order(exp$Expression.tpm,decreasing = F),][1:2000, "geneID"]
+#high<-exp[order(exp$Expression.tpm,decreasing = T),][1:2000,"geneID"]
+#low<-exp[order(exp$Expression.tpm,decreasing = F),][1:2000, "geneID"]
 
 ##Subset the GRanges objects 
-high.gr<-subset(hg19.pc.genes,hg19.pc.genes$name %in% high)
-low.gr<-subset(hg19.pc.genes,hg19.pc.genes$name %in% low)
+#high.gr<-subset(hg19.pc.genes,hg19.pc.genes$name %in% high)
+#low.gr<-subset(hg19.pc.genes,hg19.pc.genes$name %in% low)
 
 ##Create a new features list
-features2<-list(high=high.gr,low=low.gr)
+#features2<-list(high=high.gr,low=low.gr)
 ##Generate a new array. This time we will just plot around the TSS.
-gene.exp.array<-getPlotSetArray(tracks=tracks, features=features2,refgenome = "hg19",bin = 100,ignore_strand = F,type = "pf",xmin = 3000,xmax=3000,add_heatmap = T,stat = "mean")
+#gene.exp.array<-getPlotSetArray(tracks=tracks, features=features2,refgenome = "hg19",bin = 100,ignore_strand = F,type = "pf",xmin = 3000,xmax=3000,add_heatmap = T,stat = "mean")
 
-plotAverage(gene.exp.array,xlab="Gene",ylab="Read Depth")
+#plotAverage(gene.exp.array,xlab="Gene",ylab="Read Depth")
 ```
 
 Now we can see clear differences in Chromatin marks between genes grouped by expression level. We can also use seqplots to create heatmaps.
 
 ```{r}
-library(RColorBrewer)
-cols<-brewer.pal(n = 9,name = "Set3")
-plotHeatmap(gene.exp.array[c(1,2)],clusters = F)
+#library(RColorBrewer)
+#cols<-brewer.pal(n = 9,name = "Set3")
+#plotHeatmap(gene.exp.array[c(1,2)],clusters = F)
 ```
 
 # Summary
