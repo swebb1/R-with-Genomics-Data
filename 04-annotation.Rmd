@@ -20,9 +20,9 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 ##
 <div class="objectives">
 <h2><i class="far fa-check-square"></i> Learning Objectives</h2>
-* Import data into a tidy structure
-* Format, filter and manipulate your datasets in preparation for plotting 
-* Understand the reason and methods for long and wide data formats
+* Annotate GRanges objects with gene features
+* Compare and plot annotations of ChIP-seq peaks 
+* Run functional enrichment analyses on sets of genes
 </div>
 <br>
 
@@ -153,24 +153,22 @@ tagHeatmap(tagMatrixList, xlim=c(-3000, 3000), color=NULL)
 
 With both plots we can see a definite enrichment of ChIP-seq peaks around the TSS in both CBX6 and CBX7.
 
+<div class="resources">
+<h2><i class="fas fa-book"></i> Further Learning</h2>
+If you are working with ChIP-seq data then it is worth going through the [ChIP-seeker tutorial](https://bioconductor.org/packages/release/bioc/vignettes/ChIPseeker/inst/doc/ChIPseeker.html) as there are many other useful functions:
+
+* Plotting average peak profile across gene bodies and other features
+* Functional enrichment analysis
+* Venn diagrams of peak set overlaps
+
+</div>
+<br>
+
 ----
 
-## 4.5 Overlapping peaks and features
+## 4.5 Overlapping features
 
-It is useful to know to what extent peaks from different samples overlap and whether this overlap is statistically significant, as it may imply co-operative binding. **ChIPseeker** has a function *enrichPeakOverlap* to calculate and test overlaps between peak sets.
-
-The function generates a null distribution by randomly shuffling the positions of the query peaks throughout the genome and testing for overlaps with the other peaks, then repeating this many times. You should set the *nShuffle* argument to >=1000 for robust results.
-
-```{r}
-enrichPeakOverlap(queryPeak     = CBX6,
-                  targetPeak    = unlist(peakFiles[1:4]),
-                  TxDb          = txdb.gff,
-                  pAdjustMethod = "BH",
-                  nShuffle      = 1000,
-                  verbose       = TRUE)
-```
-
-**Genomation** also has some nice functions for looking at overlaps between *GRanges* objects:
+**Genomation** and **ChIPseeker** both have some nice functions for looking at overlaps between *GRanges* objects:
 
 ```{r}
 # Genomation can annotate a GRanges object with another
@@ -185,78 +183,91 @@ plotTargetAnnotation(CBX6.promoters,col=c("#0B7189","#8FD694"),main="CBX6")
 ```
 
 ```{r}
-##Read in CBX7 and AR1 file as GRanges
+## Read in CBX7 and AR1 files as GRanges
 CBX7<-readPeakFile(peakFiles[[5]])
 AR1<-readPeakFile(peakFiles[[1]])
+## Annotate with multiple features
 CBX.overlap<-annotateWithFeatures(CBX6,GRangesList(CBX7=CBX7,AR1=AR1))
 CBX.overlap
 ```
 
+## 4.6 Statistical testing of overlaps
 
-<div class="resources">
-<h2><i class="fas fa-book"></i> Further Learning</h2>
-If you are working with ChIP-seq data then it is worth going through the [ChIP-seeker tutorial](https://bioconductor.org/packages/release/bioc/vignettes/ChIPseeker/inst/doc/ChIPseeker.html) as there are many other useful functions:
+It is useful to know to what extent peaks from different samples overlap and whether this overlap is statistically significant, as it may imply co-operative binding. **ChIPseeker** has a function *enrichPeakOverlap* to calculate and test overlaps between peak sets.
 
-* Plotting average peak profile across gene bodies and other features
-* Functional enrichment analysis
-* Venn diagrams of peak set overlaps
+The function generates a null distribution by randomly shuffling the positions of the query peaks throughout the genome and testing for overlaps with the other peaks, then repeating this many times. You should set the *nShuffle* argument to >=1000 for robust results.
 
-</div>
-<br>
+```{r enrich}
+enrichPeakOverlap(queryPeak     = CBX6,
+                  targetPeak    = unlist(peakFiles[c(1:3,5)]),
+                  TxDb          = txdb.gff,
+                  pAdjustMethod = "BH",
+                  nShuffle      = 1000,
+                  verbose       = TRUE,
+                  chainFile     = NULL)
+```
 
-## 5 Testing for significant overlaps
+Unfortunately, there seems to be a bug in some versions of ChIPseeker where it will return all p-values as 1. An alternative package, **regioneR** has a comprehensive set of functions for overlap analysis.
 
-The *regioneR* package performs association analysis of overlapping features based on permutation tests. The permutation test first calculates the number of overlaps between a genomic feature and a set of given regions. To test if this number is expected by chance it also calculates a distribution of feature overlaps from numerous sets of randomised regions.
+The **regioneR** package performs association analysis of overlapping features based on permutation tests. The permutation test first calculates the number of overlaps between a genomic feature and a set of given regions. To test if this number is expected by chance it also calculates a distribution of feature overlaps from numerous sets of randomised regions.
 
-![](http://bifx-core.bio.ed.ac.uk/Shaun/Shaun/training/ROI_workshop/regioner.png)
+![](images/regioner.png){ width=50% }
 
-```{r}
+Let's test the significance of overlaps between CBX6 peaks and promoter regions:
+
+```{r regioner}
 library(regioneR)
-##Test the significance of overlaps between CBX6 and gene promoter regions.
-##For speed we use 50 permutations but at least 1000 are recommended
-pt<-permTest(A=CBX6,B=promoter,randomize.function = randomizeRegions, evaluate.function = numOverlaps,count.once=T,genome="BSgenome.Hsapiens.UCSC.hg19.masked",ntimes=50)
-pt
+## Test the significance of overlaps between CBX6 and gene promoter regions.
+## For speed we use 50 permutations but at least 1000 are recommended
+
+#pt<-permTest(A=CBX6,B=promoter,randomize.function = randomizeRegions, evaluate.function = numOverlaps,count.once=T,genome="BSgenome.Hsapiens.UCSC.hg19.masked",ntimes=50)
+#pt
 ```
 
 ```{r}
-plot(pt)
+# plot(pt)
 ```
 
-Other examples for looking at overlaps:
+<div class="discussion">
+<h2><i class="far fa-bell"></i> Discussion</h2>
+Can you think of other situations where we might want to look at overlaps of genomic regions?
 
 * Overlap of ChIP-seq peaks of replicates to test reproducibility
 * Overlap of ChIP-seq peaks from different proteins to test for co-localisation
 * Overlap of differentially expressed genes with specific genomic features
-    + Chromatin marks
-    + Repeat types
-    + CpG islands
-    + etc.
+    + Chromatin marks, classes of repeats, CpG islands etc.
+</div>
+<br>
 
-When using *RegioneR* you need to select an **evaluation** and **randomisation** function. 
+When using **RegioneR** you need to select an *evaluation* and *randomisation* function. 
 
-Here we have evaluated the number of overlaps between regions, you can also use the distance between regions or the mean score if your GRanges are weighted (e.g. methylation score). 
+Here we have evaluated the number of overlaps between regions, you can also use the distance between regions or the mean score if your *GRanges* are weighted (e.g. methylation score). 
 
-For randomisation, we have used the randomizeRegions function which selects random regions from the genome with the same length distribution as our CBX6 peaks to approximate the null distribution. We supply a repeat masked BSgenome so only mappable regions of the genome are selected. 
+For randomisation, we have used the *randomizeRegions* function which selects random regions from the genome with the same length distribution as our CBX6 peaks to approximate the null distribution. We supply a repeat masked *BSgenome* so only mappable regions of the genome are selected. 
 
-The alternative is to use resampleRegions. This assumes that your regions are part of a larger set e.g. differential binding sites. You can then approximate the null distribution by randomly sampling the same number from the full set of binding sites.
+The alternative is to use *resampleRegions*. This assumes that your regions are part of a larger set e.g. differential binding sites. You can then approximate the null distribution by randomly sampling the same number from the full set of binding sites.
 
-All of this is described in depth in the [*regioneR* documentation](https://bioconductor.org/packages/devel/bioc/vignettes/regioneR/inst/doc/regioneR.pdf).
 
-# 6. Functional gene enrichment
+<div class="resources">
+<h2><i class="fas fa-book"></i> Further Learning</h2>
+All of this is described in depth in the [*regioneR* documentation](https://bioconductor.org/packages/release/bioc/vignettes/regioneR/inst/doc/regioneR.html).
+</div>
+<br>
 
-Because we have annotated CBX6 peaks we can ask if these genes are enriched for particular functional terms. We can use the *clusterProfiler* package to perform GO enrichment analysis.
+----
+
+# 5. Functional gene enrichment
+
+Because we have annotated CBX6 peaks with **ChIPseeker** we can ask if these genes are enriched for particular functional terms. We can use the *clusterProfiler* package to perform GO enrichment analysis.
 
 ```{r}
 library(clusterProfiler)
-##Get the Entrez Gene IDs for genes with a CBX6 binding site
-#na.omit will remove all of the NA entries
+## Get the Entrez Gene IDs for genes with a CBX6 binding site. 
+## na.omit will remove all of the NA entries
 CBX6.gene<-na.omit(peakAnno@anno$ENTREZID)
 
-##Get all Entrez gene IDs to treat as background
-bg<-keys(org.Hs.eg.db)
 ##Run the GO enrichment analysis
 ego <- enrichGO(gene          = CBX6.gene,
-                universe      = bg,
                 OrgDb         = org.Hs.eg.db,
                 ont           = "ALL",
                 pAdjustMethod = "BH",
@@ -271,37 +282,51 @@ head(ego)
 barplot(ego, showCategory=20,colorBy = "p.adjust")
 ```
 
-*clusterProfiler* also provides methods to query pathway databases such as KEGG. You can find out more in the [documentation](http://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html).
-
-The package *gProfileR* looks at many different databases at once including GO, KEGG and transcription factor motifs. 
-
-```{r}
-library(gProfileR)
-##Get a table of enriched terms
-gp<-gprofiler(query = peakAnno@anno$geneId,organism = "hsapiens",significant = T,custom_bg = hg19.genes$name,max_p_value = 1)
-##Inspect the output, the "term" column is the enriched term and the "domain" tells us which database it belongs to. 
-gp
-```
-
-You can write table output to a tab separated file if you want to inspect it fully or load in excel. The file will appear in your working directory.
-
-```{r}
-##Write output to file
-write.table(gp,"gProfile.output.tab",quote=F,sep="\t",row.names=F,col.names = T)
-```
-
-<br>
 <div class="resources">
 <h2><i class="fas fa-book"></i> Further Learning</h2>
-Examples of more dplyr functions are available on the  [dplyr](https://dplyr.tidyverse.org/) website.
+**clusterProfiler** also provides methods to query pathway databases such as KEGG. You can find out more in the [documentation](https://bioconductor.org/packages/release/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html).
+</div>
+<br>
+
+The package **gprofiler2** is a wrapper for the online tool g:Profiler and looks at many different databases at once including GO, KEGG and transcription factor motifs. g:Profiler performs functional enrichment analysis of gene lists and will understand and convert Ensembl identifiers directly.
+
+```{r}
+library(gprofiler2)
+##Get a table of enriched terms with the gost function
+gp<-gost(query = peakAnno@anno$geneId,organism = "hsapiens", ordered_query = FALSE, 
+                multi_query = FALSE, significant = TRUE, exclude_iea = TRUE,
+                user_threshold = 0.05, correction_method = "g_SCS", 
+                domain_scope = "annotated", custom_bg = NULL)
+
+##Inspect the output, the "term_name" column is the enriched term and the "source" tells us which database it belongs to. 
+gp$result
+```
+
+There is an interactive plot function built into **gprofiler2** to visualise enriched terms.
+
+```{r}
+## Plot gprofiler output
+gostplot(gp, capped = TRUE, interactive = TRUE)
+```
+
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+See if you can produce a list of GO terms that are enriched in both the **clusterProfiler** and **gprofiler2** outputs.
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+```{r, answer=TRUE, eval=TRUE, purl=FALSE}
+ego[ego$ID %in% gp$result$term_id,1:3]
+```
+</div>
+</details>
 </div>
 <br>
 
 <div class="key-points">
 <h2><i class="fas fa-thumbtack"></i> Key points</h2>
- * Import and format data with `readr` and `tidyr`.
- * Use dplyr `select`, `filter` and `mutate` to manipulate datasets
- * Use `group_by`, `summarise` and `count` to create summary datasets by groups.
- * Use `pivot_longer` and `pivot_wider` to move between wide and long formats.
+ * You can annotate *GRanges* objects with packages like **genomation** and **ChIPseeker**
+ * Bioconductor has many different packages for analysing and visualising genomic datasets
 </div>
 <br>
