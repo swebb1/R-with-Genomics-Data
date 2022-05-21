@@ -217,7 +217,7 @@ The **regioneR** package performs association analysis of overlapping features b
 
 **regioneR** takes a while to run, so we have supplied the code below as an example but will not run this in the workshop. We can use **regioneR** to test the significance of overlaps between CBX6 peaks and promoter regions:
 
-```{r regioner}
+```{r regioner, eval=F}
 library(regioneR)
 ## Test the significance of overlaps between CBX6 and gene promoter regions.
 

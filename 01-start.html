@@ -356,7 +356,7 @@ $(document).ready(function () {
 <p><img src="images/rstudio-windows.png" /></p>
 </div>
 </div>
-<p>You can cutomise the appearance of RStudion under the Tools -&gt; Global Options… menu.</p>
+<p>You can cutomise the appearance of RStudio under the Tools -&gt; Global Options… menu.</p>
 <p><br></p>
 <div id="setting-up-a-new-project" class="section level3">
 <h3><strong>Setting up a new project</strong></h3>
@@ -395,20 +395,20 @@ $(document).ready(function () {
 <li><a href="https://www.bioconductor.org/">Bioconductor</a> is a repository of biology specific packages.</li>
 <li>Third party tools are often hosted on <a href="https://www.github.com">github</a>.</li>
 </ul>
-<p>Install the packages we need for these lesssons by running the code below in the R console:</p>
-<pre class="r"><code>#install from CRAN with install.packages()
-install.packages(c(&quot;ggplot2&quot;, &quot;ggthemes&quot;, &quot;plotly&quot;,&quot;ggpubr&quot;, &quot;ggrepel&quot;,&quot;viridis&quot;,&quot;RColorBrewer&quot;,&quot;ggsci&quot;,&quot;tidyverse&quot;,&quot;gghighlight&quot;,&quot;rstatix&quot;))
+<p>Install the packages we need for these lessons by running the code below in the R console:</p>
+<pre class="r"><code># Install from CRAN with install.packages()
+install.packages(c(&quot;magrittr&quot;, &quot;gprofiler2&quot;))
 
-#install from bioconductor with BiocManager
+# Install from bioconductor with BiocManager
 if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
     install.packages(&quot;BiocManager&quot;)
-BiocManager::install(c(&quot;DESeq2&quot;,&quot;genomation&quot;))
+BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BSgenome.Hsapiens.UCSC.hg19&quot;,&quot;org.Hs.eg.db&quot;,&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;,&quot;biomaRt&quot;,&quot;AnnotationHub&quot;,&quot;BSgenome.Mmusculus.UCSC.mm10&quot;,&quot;ChIPseeker&quot;,&quot;clusterProfiler&quot;,&quot;&quot;))
 
-#install from github with the devtools package
-install.packages(&quot;devtools&quot;)
-devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
+# Install from github with the devtools package - we don&#39;t need these packages this is just for demonstration.
+#install.packages(&quot;devtools&quot;)
+#devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <p>To load a specific package within an R session, use the “library” function:</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
 <br>
 <div class="key-points">
 <h2>

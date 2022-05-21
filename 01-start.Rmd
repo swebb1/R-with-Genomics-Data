@@ -49,7 +49,7 @@ The are 4 main panes, each with several tabs:
 </div>
 </div>
 
-You can cutomise the appearance of RStudion under the Tools -> Global Options... menu.
+You can cutomise the appearance of RStudio under the Tools -> Global Options... menu.
 
 <br>
 
@@ -97,28 +97,28 @@ Libraries provide additional functions in R and can be downloaded from several s
 * [Bioconductor](https://www.bioconductor.org/) is a repository of biology specific packages.
 * Third party tools are often hosted on [github](https://www.github.com).
 
-Install the packages we need for these lesssons by running the code below in the R console:
+Install the packages we need for these lessons by running the code below in the R console:
 
 ```{r, eval=FALSE}
 
-#install from CRAN with install.packages()
-install.packages(c("ggplot2", "ggthemes", "plotly","ggpubr", "ggrepel","viridis","RColorBrewer","ggsci","tidyverse","gghighlight","rstatix"))
+# Install from CRAN with install.packages()
+install.packages(c("magrittr", "gprofiler2"))
 
-#install from bioconductor with BiocManager
+# Install from bioconductor with BiocManager
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install(c("DESeq2","genomation"))
+BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19","org.Hs.eg.db","TxDb.Hsapiens.UCSC.hg19.knownGene","biomaRt","AnnotationHub","BSgenome.Mmusculus.UCSC.mm10","ChIPseeker","clusterProfiler",""))
 
-#install from github with the devtools package
-install.packages("devtools")
-devtools::install_github("thomasp85/patchwork")
+# Install from github with the devtools package - we don't need these packages this is just for demonstration.
+#install.packages("devtools")
+#devtools::install_github("thomasp85/patchwork")
 
 ```
 
 To load a specific package within an R session, use the "library" function:
 
 ```{r eval=F}
-library(tidyverse)
+library(dplyr)
 ```
 
 <br>
