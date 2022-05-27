@@ -313,6 +313,14 @@ $(document).ready(function () {
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#using-rstudio">Using RStudio</a></li>
+<li><a href="#running-commands">Running commands</a></li>
+<li><a href="#installing-libraries">Installing libraries</a></li>
+<li><a href="#genomics-file-formats">Genomics file formats</a></li>
+</ul>
+</div>
 
 <head>
 <script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
@@ -409,6 +417,39 @@ BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BS
 #devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <p>To load a specific package within an R session, use the “library” function:</p>
 <pre class="r"><code>library(dplyr)</code></pre>
+</div>
+<div id="genomics-file-formats" class="section level2">
+<h2>Genomics file formats</h2>
+<hr />
+<p>We will work with several different genomic datasets including genome sequences, gene models, ChIP-seq peak co-ordinates and aligned sequencing reads. Most of these datasets exist in databases outside of R in standardised text formats. It will be useful to familiarise yourself with these formats and the type of data stored within each.</p>
+<p>In this course we will use Fasta, Bed, wiggle and GFF files. A brief summary of file formats is provided below as well as in this <a href="https://docs.google.com/presentation/d/1WjaovDGr6YF0oHU1b1tJwBBvaqAdxBahOWk72LUrmjc/edit?usp=sharing">presentation</a></p>
+<div id="fasta" class="section level3">
+<h3><a href="https://en.wikipedia.org/wiki/FASTA_format">Fasta</a></h3>
+<p>Standard format for sequence data (DNA/RNA or protein). Can store multiple sequences separated by unique headers.</p>
+</div>
+<div id="fastq" class="section level3">
+<h3><a href="https://en.wikipedia.org/wiki/FASTQ_format">Fastq</a></h3>
+<p>Fastq is similar to Fasta but is used to store sequencing reads and includes extra lines to encode quality scores.</p>
+</div>
+<div id="bed" class="section level3">
+<h3><a href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1">Bed</a></h3>
+<p>Bed (browser extensible data) files store genomic co-ordinates to represent positions of features such as genes, ChIP-seq peaks or regulatory features (e.g. CpG islands). Bed files have at least 3 columns (chromosome, start, end) to encode regions of the genome. * Bed6 is a strict version of the bed format where each region must have a score, strand and name (chromosome, start, end, name, score, strand). * Bed12 has extra columns to represent exons in gene models. * There is a binary version of bed called <strong>bigBed</strong>, used to store and visualise large datasets.</p>
+</div>
+<div id="wiggle" class="section level3">
+<h3><a href="https://genome.ucsc.edu/goldenPath/help/wiggle.html">Wiggle</a></h3>
+<p>The wiggle or .wig format is used to represent signals or scores across the genome (e.g. sequencing read depth, GC% etc.). It has four columns (chromosome,start,end, score). There is a binary version called bigWig used to store and visualise large datasets.</p>
+</div>
+<div id="gffgtf" class="section level3">
+<h3><a href="https://en.wikipedia.org/wiki/General_feature_format">GFF/GTF</a></h3>
+<p>The GFF (general feature format) is used to store rich information on genomic annotations. GTF (gene transfer format) is a derivative of GFF which stores gene transcript models, with detailed information on genetic features such as start codons, alternative transcripts, exons and CDS.</p>
+</div>
+<div id="sam" class="section level3">
+<h3><a href="https://samtools.github.io/hts-specs/SAMv1.pdf">SAM</a></h3>
+<p>The SAM (sequence alignment/map) format stores sequencing reads and quality scores as well as detailed information following alignment to a genome/transcriptome. There is a binary version called BAM used to store and visualise large datasets.</p>
+</div>
+<div id="vcf" class="section level3">
+<h3><a href="https://genome.ucsc.edu/goldenPath/help/vcf.html">VCF</a></h3>
+<p>The VCF (variant calling format) is used to store positions of SNPs, INDELs and other genomic variations following variant calling analysis</p>
 <br>
 <div class="key-points">
 <h2>
@@ -420,12 +461,14 @@ BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BS
 <li>Create a new project in RStudio</li>
 <li>Install the required libraries</li>
 <li>Open a new R script (or R markdown file for advanced users)</li>
+<li>Be aware of common file formats for genomics data</li>
 <li>It will be best to work with the tutorial and RStudio open together so you can easily switch between the two. Working on a wide split-screen or multiple desktops is the best setup.</li>
 <li>I recommend typing out commands rather than copy-and-pasting if you want to learn. Remember you can use the <kbd>Tab</kbd> key to save on typing!</li>
 </ul>
 </div>
 </div>
 <p><br></p>
+</div>
 </div>
 
 
