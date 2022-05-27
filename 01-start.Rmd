@@ -19,6 +19,8 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 
 ----
 
+This workshop does not provide an introduction to R and is not aimed at beginners. If you are new to R, we recommend first completing our [introductory workshop](https://swebb1.github.io/R_Training/). 
+
 We recommend using [RStudio](https://rstudio.com/) for this workshop. [RStudio](https://www.rstudio.com/) is an Integrated Development Environment (IDE) for R. It can be accessed in several ways. Download [RStudio](https://rstudio.com/) and install it on your own computer.
 
 <br>
