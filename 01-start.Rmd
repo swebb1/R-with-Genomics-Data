@@ -25,8 +25,10 @@ We recommend using [RStudio](https://rstudio.com/) for this workshop. [RStudio](
 
 <br>
 
+----
+
 ## Using RStudio
-***
+
 
 <div class = "row">
 <div class = "col-md-6">
@@ -67,8 +69,9 @@ Using Rstudio has the advantage that everything you do can be saved between RStu
 
 <br>
 
+----
+
 ## Running commands
-***
 
 You can work in 3 different ways in RStudio. 
 
@@ -92,8 +95,9 @@ Using **R Markdown** is a great way to annotate your code and present it at the 
 
 <br>
 
+----
+
 ## Installing libraries
-***
 
 Libraries provide additional functions in R and can be downloaded from several sources:
 
@@ -111,7 +115,7 @@ install.packages(c("magrittr", "gprofiler2"))
 # Install from bioconductor with BiocManager
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19","org.Hs.eg.db","TxDb.Hsapiens.UCSC.hg19.knownGene","biomaRt","AnnotationHub","BSgenome.Mmusculus.UCSC.mm10","ChIPseeker","clusterProfiler",""))
+BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19","org.Hs.eg.db","TxDb.Hsapiens.UCSC.hg19.knownGene","biomaRt","AnnotationHub","BSgenome.Mmusculus.UCSC.mm10","ChIPseeker","clusterProfiler"))
 
 # Install from github with the devtools package - we don't need these packages this is just for demonstration.
 #install.packages("devtools")
@@ -122,11 +126,12 @@ BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19
 To load a specific package within an R session, use the "library" function:
 
 ```{r eval=F}
-library(dplyr)
+library(magrittr)
 ```
 
+----
+
 ## Genomics file formats
-***
 
 We will work with several different genomic datasets including genome sequences, gene models, ChIP-seq peak co-ordinates and aligned sequencing reads. Most of these datasets exist in databases outside of R in standardised text formats. It will be useful to familiarise yourself with these formats and the type of data stored within each.
 
@@ -139,7 +144,8 @@ Standard format for sequence data (DNA/RNA or protein). Can store multiple seque
 Fastq is similar to Fasta but is used to store sequencing reads and includes extra lines to encode quality scores.
 
 ### [Bed](https://genome.ucsc.edu/FAQ/FAQformat.html#format1)
-Bed (browser extensible data) files store genomic co-ordinates to represent positions of features such as genes, ChIP-seq peaks or regulatory features (e.g. CpG islands). Bed files have at least 3 columns (chromosome, start, end) to encode regions of the genome. 
+Bed (browser extensible data) files store genomic co-ordinates to represent positions of features such as genes, ChIP-seq peaks or regulatory features (e.g. CpG islands). Bed files have at least 3 columns (chromosome, start, end) to encode regions of the genome.
+
 * Bed6 is a strict version of the bed format where each region must have a score, strand and name (chromosome, start, end, name, score, strand).
 * Bed12 has extra columns to represent exons in gene models.
 * There is a binary version of bed called **bigBed**, used to store and visualise large datasets.

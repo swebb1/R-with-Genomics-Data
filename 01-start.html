@@ -329,9 +329,9 @@ $(document).ready(function () {
 <p>This workshop does not provide an introduction to R and is not aimed at beginners. If you are new to R, we recommend first completing our <a href="https://swebb1.github.io/R_Training/">introductory workshop</a>.</p>
 <p>We recommend using <a href="https://rstudio.com/">RStudio</a> for this workshop. <a href="https://www.rstudio.com/">RStudio</a> is an Integrated Development Environment (IDE) for R. It can be accessed in several ways. Download <a href="https://rstudio.com/">RStudio</a> and install it on your own computer.</p>
 <p><br></p>
+<hr />
 <div id="using-rstudio" class="section level2">
 <h2>Using RStudio</h2>
-<hr />
 <div class="row">
 <div class="col-md-6">
 <p>The are 4 main panes, each with several tabs:</p>
@@ -373,11 +373,11 @@ $(document).ready(function () {
 <p>Once you have done this, this will be your <strong>working directory</strong>. Files will be saved (or loaded from) here by default unless you specify a full path. You can change your working directory under the <strong>session</strong> menu at the top.</p>
 <p>Using Rstudio has the advantage that everything you do can be saved between RStudio sessions.</p>
 <p><br></p>
+<hr />
 </div>
 </div>
 <div id="running-commands" class="section level2">
 <h2>Running commands</h2>
-<hr />
 <p>You can work in 3 different ways in RStudio.</p>
 <ul>
 <li>Use the <strong>console</strong> to run commands.</li>
@@ -394,10 +394,10 @@ $(document).ready(function () {
 <p>In the console you should always see a <code>&gt;</code> prompt, if you can’t see this R may still be working. There is a red Stop light at the top right of the console when a command is running. If you see a <code>+</code> instead of <code>&gt;</code>, R is waiting for more input. Sometimes this means you have forgotten to close a bracket or quotation.</p>
 <p>Using <strong>R Markdown</strong> is a great way to annotate your code and present it at the end. It’s worth learning but will add a further level of complication for novice users.</p>
 <p><br></p>
+<hr />
 </div>
 <div id="installing-libraries" class="section level2">
 <h2>Installing libraries</h2>
-<hr />
 <p>Libraries provide additional functions in R and can be downloaded from several sources:</p>
 <ul>
 <li><a href="https://cran.r-project.org/">CRAN</a> is the Comprehensive R Archive Network and hosts the majority of generic R packages.</li>
@@ -411,17 +411,17 @@ install.packages(c(&quot;magrittr&quot;, &quot;gprofiler2&quot;))
 # Install from bioconductor with BiocManager
 if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
     install.packages(&quot;BiocManager&quot;)
-BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BSgenome.Hsapiens.UCSC.hg19&quot;,&quot;org.Hs.eg.db&quot;,&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;,&quot;biomaRt&quot;,&quot;AnnotationHub&quot;,&quot;BSgenome.Mmusculus.UCSC.mm10&quot;,&quot;ChIPseeker&quot;,&quot;clusterProfiler&quot;,&quot;&quot;))
+BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BSgenome.Hsapiens.UCSC.hg19&quot;,&quot;org.Hs.eg.db&quot;,&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;,&quot;biomaRt&quot;,&quot;AnnotationHub&quot;,&quot;BSgenome.Mmusculus.UCSC.mm10&quot;,&quot;ChIPseeker&quot;,&quot;clusterProfiler&quot;))
 
 # Install from github with the devtools package - we don&#39;t need these packages this is just for demonstration.
 #install.packages(&quot;devtools&quot;)
 #devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <p>To load a specific package within an R session, use the “library” function:</p>
-<pre class="r"><code>library(dplyr)</code></pre>
+<pre class="r"><code>library(magrittr)</code></pre>
+<hr />
 </div>
 <div id="genomics-file-formats" class="section level2">
 <h2>Genomics file formats</h2>
-<hr />
 <p>We will work with several different genomic datasets including genome sequences, gene models, ChIP-seq peak co-ordinates and aligned sequencing reads. Most of these datasets exist in databases outside of R in standardised text formats. It will be useful to familiarise yourself with these formats and the type of data stored within each.</p>
 <p>In this course we will use Fasta, Bed, wiggle and GFF files. A brief summary of file formats is provided below as well as in this <a href="https://docs.google.com/presentation/d/1WjaovDGr6YF0oHU1b1tJwBBvaqAdxBahOWk72LUrmjc/edit?usp=sharing">presentation</a></p>
 <div id="fasta" class="section level3">
@@ -434,7 +434,12 @@ BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BS
 </div>
 <div id="bed" class="section level3">
 <h3><a href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1">Bed</a></h3>
-<p>Bed (browser extensible data) files store genomic co-ordinates to represent positions of features such as genes, ChIP-seq peaks or regulatory features (e.g. CpG islands). Bed files have at least 3 columns (chromosome, start, end) to encode regions of the genome. * Bed6 is a strict version of the bed format where each region must have a score, strand and name (chromosome, start, end, name, score, strand). * Bed12 has extra columns to represent exons in gene models. * There is a binary version of bed called <strong>bigBed</strong>, used to store and visualise large datasets.</p>
+<p>Bed (browser extensible data) files store genomic co-ordinates to represent positions of features such as genes, ChIP-seq peaks or regulatory features (e.g. CpG islands). Bed files have at least 3 columns (chromosome, start, end) to encode regions of the genome.</p>
+<ul>
+<li>Bed6 is a strict version of the bed format where each region must have a score, strand and name (chromosome, start, end, name, score, strand).</li>
+<li>Bed12 has extra columns to represent exons in gene models.</li>
+<li>There is a binary version of bed called <strong>bigBed</strong>, used to store and visualise large datasets.</li>
+</ul>
 </div>
 <div id="wiggle" class="section level3">
 <h3><a href="https://genome.ucsc.edu/goldenPath/help/wiggle.html">Wiggle</a></h3>
