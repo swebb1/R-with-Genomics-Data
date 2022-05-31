@@ -321,6 +321,26 @@ ego[ego$ID %in% gp$result$term_id,1:3]
 </div>
 <br>
 
+# 6. Other Bioconductor packages
+
+In the remaining time, have a look at some of the other Bioconductor packages available and see if you can follow their tutorials. Here are a few ideas:
+
+* Genome browser plotting and visualisation
+    * [Karyoploter](http://bioconductor.org/packages/release/bioc/html/karyoploteR.html)
+    * [GViz](https://bioconductor.org/packages/release/bioc/html/Gviz.html)
+* Average profile and heatmap plots
+    * [EnrichedHeatmap](https://bioconductor.org/packages/release/bioc/html/EnrichedHeatmap.html)
+    * [soGGi](https://bioconductor.org/packages/release/bioc/html/soGGi.html)
+* Sequence alignment logos
+    * [seqlogo](https://bioconductor.org/packages/release/bioc/vignettes/seqLogo/inst/doc/seqLogo.html)
+* HiC data analysis
+    * [HiCbricks](https://www.bioconductor.org/packages/release/bioc/html/HiCBricks.html)
+    * [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html)
+* RNA-seq differential expression
+    * [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
+* Methylation analysis
+    * [methylKit](https://www.bioconductor.org/packages/release/bioc/vignettes/methylKit/inst/doc/methylKit.html)
+
 <div class="key-points">
 <h2><i class="fas fa-thumbtack"></i> Key points</h2>
  * You can annotate *GRanges* objects with packages like **genomation** and **ChIPseeker**
