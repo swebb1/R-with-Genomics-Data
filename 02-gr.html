@@ -13,13 +13,22 @@
 
 <title>Genomic Ranges</title>
 
-<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -36,11 +45,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -53,32 +57,6 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -90,10 +68,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -110,40 +84,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -171,7 +118,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -183,7 +130,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -194,10 +141,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -209,7 +169,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -305,7 +264,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -369,11 +328,11 @@ gr2</code></pre>
 <pre><code>## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr2 350870-351369      + |         1
-##   [2]     chr4 502628-503127      + |         2
-##   [3]     chr6 562006-562505      + |         3
-##   [4]     chr8 790925-791424      - |         4
-##   [5]    chr10 360577-361076      - |         5
+##   [1]     chr2 671425-671924      + |         1
+##   [2]     chr4 968976-969475      + |         2
+##   [3]     chr6 621529-622028      + |         3
+##   [4]     chr8 160665-161164      - |         4
+##   [5]    chr10 901865-902364      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <p>We can store several <em>GRanges</em> objects in a <em>GRangeslist</em>.</p>
@@ -398,11 +357,11 @@ gl</code></pre>
 ## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
-##   [1]     chr2 350870-351369      + |         1
-##   [2]     chr4 502628-503127      + |         2
-##   [3]     chr6 562006-562505      + |         3
-##   [4]     chr8 790925-791424      - |         4
-##   [5]    chr10 360577-361076      - |         5
+##   [1]     chr2 671425-671924      + |         1
+##   [2]     chr4 968976-969475      + |         2
+##   [3]     chr6 621529-622028      + |         3
+##   [4]     chr8 160665-161164      - |         4
+##   [5]    chr10 901865-902364      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <hr />
@@ -423,9 +382,9 @@ seqnames(gr)</code></pre>
 ## Levels(3): chr2 chr6 chr10</code></pre>
 <pre class="r"><code>## Get the start and end positions or the strand
 start(gr2)</code></pre>
-<pre><code>## [1] 350870 502628 562006 790925 360577</code></pre>
+<pre><code>## [1] 671425 968976 621529 160665 901865</code></pre>
 <pre class="r"><code>end(gr2)</code></pre>
-<pre><code>## [1] 351369 503127 562505 791424 361076</code></pre>
+<pre><code>## [1] 671924 969475 622028 161164 902364</code></pre>
 <pre class="r"><code>strand(gr2)</code></pre>
 <pre><code>## factor-Rle of length 5 with 2 runs
 ##   Lengths: 3 2
@@ -483,11 +442,11 @@ c(gr,gr2)</code></pre>
 ##    [3]     chr6       300-400      * |         3      0.50
 ##    [4]     chr6       350-500      * |         4      0.25
 ##    [5]    chr10       500-600      * |         5      0.00
-##    [6]     chr2 350870-351369      + |         1        NA
-##    [7]     chr4 502628-503127      + |         2        NA
-##    [8]     chr6 562006-562505      + |         3        NA
-##    [9]     chr8 790925-791424      - |         4        NA
-##   [10]    chr10 360577-361076      - |         5        NA
+##    [6]     chr2 671425-671924      + |         1        NA
+##    [7]     chr4 968976-969475      + |         2        NA
+##    [8]     chr6 621529-622028      + |         3        NA
+##    [9]     chr8 160665-161164      - |         4        NA
+##   [10]    chr10 901865-902364      - |         5        NA
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <pre class="r"><code>## Subset a GRanges object
@@ -495,8 +454,8 @@ subset(gr2,strand(gr2)==&quot;-&quot;)</code></pre>
 <pre><code>## GRanges object with 2 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr8 790925-791424      - |         4
-##   [2]    chr10 360577-361076      - |         5
+##   [1]     chr8 160665-161164      - |         4
+##   [2]    chr10 901865-902364      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <pre class="r"><code>## Split GRanges into a GRangesList
@@ -583,7 +542,7 @@ subset(grc,seqnames(grc)==&quot;chr2&quot;)</code></pre>
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
 ##   [1]     chr2       100-200      * |         1      1.00
 ##   [2]     chr2       150-300      * |         2      0.75
-##   [3]     chr2 350870-351369      + |         1        NA
+##   [3]     chr2 671425-671924      + |         1        NA
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 </div>
@@ -601,11 +560,11 @@ promoters(gr2,upstream = 1000,downstream=1000)</code></pre>
 <pre><code>## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr2 349870-351869      + |         1
-##   [2]     chr4 501628-503627      + |         2
-##   [3]     chr6 561006-563005      + |         3
-##   [4]     chr8 790425-792424      - |         4
-##   [5]    chr10 360077-362076      - |         5
+##   [1]     chr2 670425-672424      + |         1
+##   [2]     chr4 967976-969975      + |         2
+##   [3]     chr6 620529-622528      + |         3
+##   [4]     chr8 160165-162164      - |         4
+##   [5]    chr10 901365-903364      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <pre class="r"><code>## Reduce overlapping ranges into a single range
@@ -707,11 +666,11 @@ promoters(gl)</code></pre>
 ## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
-##   [1]     chr2 348870-351069      + |         1
-##   [2]     chr4 500628-502827      + |         2
-##   [3]     chr6 560006-562205      + |         3
-##   [4]     chr8 791225-793424      - |         4
-##   [5]    chr10 360877-363076      - |         5
+##   [1]     chr2 669425-671624      + |         1
+##   [2]     chr4 966976-969175      + |         2
+##   [3]     chr6 619529-621728      + |         3
+##   [4]     chr8 160965-163164      - |         4
+##   [5]    chr10 902165-904364      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <p><em>GRangesList</em> objects also work with base R list functions like <em>lapply</em> and <em>unlist</em> but we will not cover that here.</p>
@@ -733,17 +692,17 @@ promoters(gl)</code></pre>
 <pre><code>## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr2 351370-352369      + |         1
-##   [2]     chr4 503128-504127      + |         2
-##   [3]     chr6 562506-563505      + |         3
-##   [4]     chr8 789925-790924      - |         4
-##   [5]    chr10 359577-360576      - |         5
+##   [1]     chr2 671925-672924      + |         1
+##   [2]     chr4 969476-970475      + |         2
+##   [3]     chr6 622029-623028      + |         3
+##   [4]     chr8 159665-160664      - |         4
+##   [5]    chr10 900865-901864      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 </div>
 </details>
 <p>2.Create a new GRanges object called genes and find which genes overlap with the ranges in gr2.</p>
-<pre class="r"><code>genes&lt;-GRanges(seqnames=c(&quot;chr2&quot;,&quot;chr6&quot;,&quot;chr9&quot;),ranges = IRanges(start=c(623900,791900,881110),width=100),strand=&quot;+&quot;,name=c(&quot;geneA&quot;,&quot;geneB&quot;,&quot;geneC&quot;))</code></pre>
+<pre class="r"><code>genes&lt;-GRanges(seqnames=c(&quot;chr2&quot;,&quot;chr6&quot;,&quot;chr9&quot;),ranges = IRanges(start=c(start(gr2)[c(1,3)],1000),width=100),strand=&quot;+&quot;,name=c(&quot;geneA&quot;,&quot;geneB&quot;,&quot;geneC&quot;))</code></pre>
 <details>
 <summary>
 </summary>
@@ -755,12 +714,12 @@ promoters(gl)</code></pre>
 qh&lt;-queryHits(overlaps)
 qh&lt;-unique(qh) ## Not necessary here, but will prevent repeats if genes overlapped with more than one region
 genes[qh]$name</code></pre>
-<pre><code>## character(0)</code></pre>
+<pre><code>## [1] &quot;geneA&quot; &quot;geneB&quot;</code></pre>
 <p>Note that it is also possible to string together GRanges operations with R <em>pipes</em> e.g.</p>
 <pre class="r"><code>library(magrittr)
 qh&lt;-findOverlaps(query = genes,subject=gr2) %&gt;% queryHits() %&gt;% unique()
 genes[qh]$name</code></pre>
-<pre><code>## character(0)</code></pre>
+<pre><code>## [1] &quot;geneA&quot; &quot;geneB&quot;</code></pre>
 </div>
 </details>
 </div>
@@ -947,7 +906,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>

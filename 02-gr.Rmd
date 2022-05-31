@@ -305,7 +305,7 @@ flank(gr2,1000,start=F)
 2.Create a new GRanges object called genes and find which genes overlap with the ranges in gr2.
 
 ```{r}
-genes<-GRanges(seqnames=c("chr2","chr6","chr9"),ranges = IRanges(start=c(623900,791900,881110),width=100),strand="+",name=c("geneA","geneB","geneC"))
+genes<-GRanges(seqnames=c("chr2","chr6","chr9"),ranges = IRanges(start=c(start(gr2)[c(1,3)],1000),width=100),strand="+",name=c("geneA","geneB","geneC"))
 ```
 
 <details>
