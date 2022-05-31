@@ -172,7 +172,7 @@ split(gr,seqnames(gr))
 
 ```{r}
 gr_subset=subset(gr,mcols(gr)$GC>=0.5)
-split(gr_subset,seqlevels(gr_subset))
+split(gr_subset,seqnames(gr_subset))
 ```
 :::
 
