@@ -362,19 +362,19 @@ gr2.seq&lt;-getSeq(hs,gr2)
 gr2.seq</code></pre>
 <pre><code>## DNAStringSet object of length 5:
 ##     width seq
-## [1]   500 CCTGTGACCGTGTGGTTCCTATGGGCCATGTGGT...TGTTACCATGGTTCATGTGCTCCTGCAGTCTGT
-## [2]   500 CTAGGTTGTGGCCCTGGAGGCACTGCCGAAATTT...TGTGGCCAGTCCCTGCCTTGCCTGGACTGTGTG
-## [3]   500 TCCTAACGTTATCCCTCTCCTTGCCTCCCACCTC...GTAAGTCATTCTACTATAAAGACACATGCACAG
-## [4]   500 AGAAATATTTTTAAAAGTGTTTTAATTTCTAATG...GACAATTAACAAAGAAACTGTAATCATTCATAA
-## [5]   500 TTAGGTATATCTCCCAGTGCTATCCCTCCCCCCT...ACAATGGTTGAACTAGTTGACAGTCCCACCAAC</code></pre>
+## [1]   500 TTGCGGGGGGGCAGCTTCGTGTCACTTTCCAACT...ACACCTCGCCGTTCAAATATCAGGAAGTTAAAA
+## [2]   500 ACATGCTCAGGAATTCAGAATAAAATAAACAGAA...GCTGCAGGAAGGGGGTGCTGGGTTTTTTGCTTG
+## [3]   500 AAGAGAGATATCTGACATGAAATGACATTGGAAA...ATATAGACAAAGGTAACTTTTAATAGAACCAGT
+## [4]   500 AAAAGGGACAAAAATGGGAGAAATTACTAGATAC...AATGCTGGGAAGGGAGGAGAGATTCTCACACAT
+## [5]   500 TTGTTTTTATGTCTTGGTGAAAGGCATGAATGGC...ATGGATTTTCTGTTGTACAGAGGAGAGAGCCTG</code></pre>
 <pre class="r"><code>## Calculate the dinucleotide frequencies for each sequence
 dinucleotideFrequency(gr2.seq)</code></pre>
-<pre><code>##      AA AC AG AT CA CC CG CT GA GC GG GT TA TC  TG TT
-## [1,]  2  5  6 35 19 40  4 43 11 12 40 87 16 48 100 31
-## [2,] 18 22 20 25 35 47 10 42 16 24 34 33 16 40  44 73
-## [3,] 41 27 27 43 42 36  6 28 30 17 23 32 25 32  47 43
-## [4,] 64 31 43 38 37 20  6 25 36 12 29 23 39 25  22 49
-## [5,] 20 23 24 49 41 47  4 26 22 13 20 41 33 36  48 52</code></pre>
+<pre><code>##      AA AC AG AT CA CC CG CT GA GC GG GT TA TC TG TT
+## [1,] 33 25 31 14 37 56 36 32 25 44 47 23  9 36 25 26
+## [2,] 43 24 42 36 44 30 10 24 38 35 44 22 19 19 44 25
+## [3,] 69 30 30 52 35 16  1 28 31 12 13 22 45 22 34 59
+## [4,] 48 22 52 38 44 14  0 24 50 26 46 23 17 20 47 28
+## [5,] 16 25 35 27 29 27  9 39 38 28 60 30 20 24 53 39</code></pre>
 <p>All <em>BSgenome</em> databases contain a <em>seqinfo</em> object that describes the genome. We can add this information to any of our GRanges objects.</p>
 <pre class="r"><code>seqinfo(hs)</code></pre>
 <pre><code>## Seqinfo object with 298 sequences (2 circular) from hg19 genome:
@@ -451,11 +451,11 @@ seqinfo(hg19.pc.genes)</code></pre>
 </h2>
 <pre class="r"><code>letterFrequency(gr2.seq,letters = &quot;GC&quot;,as.prob = T)</code></pre>
 <pre><code>##        G|C
-## [1,] 0.512
-## [2,] 0.484
-## [3,] 0.430
-## [4,] 0.376
-## [5,] 0.430</code></pre>
+## [1,] 0.600
+## [2,] 0.496
+## [3,] 0.316
+## [4,] 0.454
+## [5,] 0.522</code></pre>
 </div>
 </details>
 2.Attempt to translate the sequences in <em>gr2.seq</em> into amino acid sequences using the <em>Biostrings</em> package.
@@ -469,11 +469,20 @@ seqinfo(hg19.pc.genes)</code></pre>
 <pre class="r"><code>translate(gr2.seq)</code></pre>
 <pre><code>## AAStringSet object of length 5:
 ##     width seq
-## [1]   166 PVTVWFLWAMWFMWSCGLCVPCGLCGAVILWSCG...CGPSDPLVL*SCGPCGPVVL*FCVTMVHVLLQS
-## [2]   166 LGCGPGGTAEISLRPWLFFSMVLLNNSGCLSLTL...QFHGLAGSAGPELGPRRPPSGPSVASPCLAWTV
-## [3]   166 S*RYPSPCLPPPDRPWCVIFPSLCPYVLIGQLPF...HGSKTRNTI*PSNPITGYIPKRL*VILL*RHMH
-## [4]   166 RNIFKSVLISNVANINRYNSHDQNLFGVLSNFKK...RAVFTVDKITFQVKLVIKITGRKTINKETVIIH
-## [5]   166 LGISPSAIPPPSPHPTTVPRV*CSPSWSM*SHCS...*WDGWVKWYF*F*IPEESPH*LPQWLN*LTVPP</code></pre>
+## [1]   166 MRGGSFVSLSNSASTGAWAYWFK*SVKDTSLSTV...TFQARAFDPNFRDASVERKDGR*HLAVQISGS*
+## [2]   166 TCSGIQNKINRKLLAHYLW*NDSGSHTTFDPSEN...RLTRWAHWGGRGRAADMPSTAMGLQEGGAGFFA
+## [3]   166 KRDI*HEMTLENIKHEK*C*PIWLLLETNYIFNL...CGLNKILRMFFDLIHLCFSITK*YRQR*LLIEP
+## [4]   166 KRDKNGRNY*IPWLTIKAALIKTVWQWSANSGLS...E*RRDLS*EMGQEVLERQRESIRMLGREERFSH
+## [5]   166 MFLCLGERHEWLLTRVGKDAVTRDSAVL*LEEPR...PGTGRMADYAIQRYLVLSHLTFLWIFCCTEERA</code></pre>
+<p>Because the gr2 regions are randomly selected they don’t really represent transcripts. You may end up with an error if there are Ns in your sequences. You can use the <em>if.fuzzy.codon</em> argument to solve this.</p>
+<pre class="r"><code>translate(gr2.seq,if.fuzzy.codon = &quot;solve&quot;)</code></pre>
+<pre><code>## AAStringSet object of length 5:
+##     width seq
+## [1]   166 MRGGSFVSLSNSASTGAWAYWFK*SVKDTSLSTV...TFQARAFDPNFRDASVERKDGR*HLAVQISGS*
+## [2]   166 TCSGIQNKINRKLLAHYLW*NDSGSHTTFDPSEN...RLTRWAHWGGRGRAADMPSTAMGLQEGGAGFFA
+## [3]   166 KRDI*HEMTLENIKHEK*C*PIWLLLETNYIFNL...CGLNKILRMFFDLIHLCFSITK*YRQR*LLIEP
+## [4]   166 KRDKNGRNY*IPWLTIKAALIKTVWQWSANSGLS...E*RRDLS*EMGQEVLERQRESIRMLGREERFSH
+## [5]   166 MFLCLGERHEWLLTRVGKDAVTRDSAVL*LEEPR...PGTGRMADYAIQRYLVLSHLTFLWIFCCTEERA</code></pre>
 </div>
 </details>
 </div>

@@ -175,6 +175,7 @@ If you are working with ChIP-seq data then it is worth going through the [ChIP-s
 ```{r}
 # Genomation can annotate a GRanges object with another
 library(genomation)
+par(mfrow=c(1,1)) ## reset plotting format as ChIPseeker has altered this
 CBX6.promoters<-annotateWithFeature(CBX6,promoter,feature.name ="Promoters")
 CBX6.promoters
 ```

@@ -108,6 +108,11 @@ letterFrequency(gr2.seq,letters = "GC",as.prob = T)
 ```{r message=FALSE, warning=FALSE}
 translate(gr2.seq)
 ```
+Because the gr2 regions are randomly selected they don't really represent transcripts. You may end up with an error if there are Ns in your sequences. You can use the *if.fuzzy.codon* argument to solve this.
+```{r message=FALSE, warning=FALSE}
+translate(gr2.seq,if.fuzzy.codon = "solve")
+```
+
 </div>
 </details>
 </div>
