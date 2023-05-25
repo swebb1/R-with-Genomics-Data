@@ -113,8 +113,9 @@ Install the packages we need for these lessons by running the code below in the 
 install.packages(c("magrittr", "gprofiler2"))
 
 # Install from bioconductor with BiocManager
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)){
     install.packages("BiocManager")
+}
 BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19","org.Hs.eg.db","TxDb.Hsapiens.UCSC.hg19.knownGene","biomaRt","AnnotationHub","BSgenome.Mmusculus.UCSC.mm10","ChIPseeker","clusterProfiler"))
 
 # Install from github with the devtools package - we don't need these packages this is just for demonstration.

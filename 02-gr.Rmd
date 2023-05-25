@@ -331,8 +331,7 @@ genes[qh]$name
 Note that it is also possible to string together GRanges operations with R *pipes* e.g.
 
 ```{r}
-library(magrittr)
-qh<-findOverlaps(query = genes,subject=gr2) %>% queryHits() %>% unique()
+qh<-findOverlaps(query = genes,subject=gr2) |> queryHits() |> unique()
 genes[qh]$name
 ```
 :::

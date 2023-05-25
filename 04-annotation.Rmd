@@ -150,7 +150,7 @@ We can also plot this as a heatmap rather than an average profile.
 
 ```{r}
 ##Plot heatmaps of peak distribution across promoter regions
-tagHeatmap(tagMatrixList, xlim=c(-3000, 3000), color=NULL)
+tagHeatmap(tagMatrixList,nrow=2)
 ```
 
 With both plots we can see a definite enrichment of ChIP-seq peaks around the TSS in both CBX6 and CBX7.
@@ -331,6 +331,7 @@ In the remaining time, have a look at some of the other Bioconductor packages av
     * [GViz](https://bioconductor.org/packages/release/bioc/html/Gviz.html)
 * Average profile and heatmap plots
     * [EnrichedHeatmap](https://bioconductor.org/packages/release/bioc/html/EnrichedHeatmap.html)
+    * [profileplyr](https://www.bioconductor.org/packages/release/bioc/html/profileplyr.html)
     * [soGGi](https://bioconductor.org/packages/release/bioc/html/soGGi.html)
 * Sequence alignment logos
     * [seqlogo](https://bioconductor.org/packages/release/bioc/vignettes/seqLogo/inst/doc/seqLogo.html)

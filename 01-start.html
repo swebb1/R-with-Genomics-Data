@@ -13,13 +13,22 @@
 
 <title>Getting Started</title>
 
-<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -36,11 +45,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -53,32 +57,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -90,10 +69,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -110,40 +85,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -171,7 +122,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -183,7 +134,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -193,11 +144,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -209,13 +177,12 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -223,16 +190,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -276,7 +236,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -305,7 +265,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -315,10 +275,14 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#using-rstudio">Using RStudio</a></li>
-<li><a href="#running-commands">Running commands</a></li>
-<li><a href="#installing-libraries">Installing libraries</a></li>
-<li><a href="#genomics-file-formats">Genomics file formats</a></li>
+<li><a href="#using-rstudio" id="toc-using-rstudio">Using
+RStudio</a></li>
+<li><a href="#running-commands" id="toc-running-commands">Running
+commands</a></li>
+<li><a href="#installing-libraries"
+id="toc-installing-libraries">Installing libraries</a></li>
+<li><a href="#genomics-file-formats"
+id="toc-genomics-file-formats">Genomics file formats</a></li>
 </ul>
 </div>
 
@@ -326,8 +290,15 @@ $(document).ready(function () {
 <script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
 </head>
 <hr />
-<p>This workshop does not provide an introduction to R and is not aimed at beginners. If you are new to R, we recommend first completing our <a href="https://swebb1.github.io/R_Training/">introductory workshop</a>.</p>
-<p>We recommend using <a href="https://rstudio.com/">RStudio</a> for this workshop. <a href="https://www.rstudio.com/">RStudio</a> is an Integrated Development Environment (IDE) for R. It can be accessed in several ways. Download <a href="https://rstudio.com/">RStudio</a> and install it on your own computer.</p>
+<p>This workshop does not provide an introduction to R and is not aimed
+at beginners. If you are new to R, we recommend first completing our <a
+href="https://swebb1.github.io/R_Training/">introductory
+workshop</a>.</p>
+<p>We recommend using <a href="https://rstudio.com/">RStudio</a> for
+this workshop. <a href="https://www.rstudio.com/">RStudio</a> is an
+Integrated Development Environment (IDE) for R. It can be accessed in
+several ways. Download <a href="https://rstudio.com/">RStudio</a> and
+install it on your own computer.</p>
 <p><br></p>
 <hr />
 <div id="using-rstudio" class="section level2">
@@ -350,7 +321,8 @@ $(document).ready(function () {
 <ul>
 <li>Objects you have stored</li>
 <li>Commands you have typed</li>
-<li>Additional tabs for version control, database and website building…</li>
+<li>Additional tabs for version control, database and website
+building…</li>
 </ul></li>
 <li><strong>Files and output</strong> (bottom right)
 <ul>
@@ -365,13 +337,21 @@ $(document).ready(function () {
 <p><img src="images/rstudio-windows.png" /></p>
 </div>
 </div>
-<p>You can cutomise the appearance of RStudio under the Tools -&gt; Global Options… menu.</p>
+<p>You can cutomise the appearance of RStudio under the Tools -&gt;
+Global Options… menu.</p>
 <p><br></p>
 <div id="setting-up-a-new-project" class="section level3">
 <h3><strong>Setting up a new project</strong></h3>
-<p>There is a drop-down <strong>project</strong> menu at the top right of RStudio. Click this, select “New Project…” and create one in a new directory. Make sure you have write permission for the directory you choose.</p>
-<p>Once you have done this, this will be your <strong>working directory</strong>. Files will be saved (or loaded from) here by default unless you specify a full path. You can change your working directory under the <strong>session</strong> menu at the top.</p>
-<p>Using Rstudio has the advantage that everything you do can be saved between RStudio sessions.</p>
+<p>There is a drop-down <strong>project</strong> menu at the top right
+of RStudio. Click this, select “New Project…” and create one in a new
+directory. Make sure you have write permission for the directory you
+choose.</p>
+<p>Once you have done this, this will be your <strong>working
+directory</strong>. Files will be saved (or loaded from) here by default
+unless you specify a full path. You can change your working directory
+under the <strong>session</strong> menu at the top.</p>
+<p>Using Rstudio has the advantage that everything you do can be saved
+between RStudio sessions.</p>
 <p><br></p>
 <hr />
 </div>
@@ -381,81 +361,134 @@ $(document).ready(function () {
 <p>You can work in 3 different ways in RStudio.</p>
 <ul>
 <li>Use the <strong>console</strong> to run commands.</li>
-<li>Create a new <strong>R script</strong> to save your commands as you go.</li>
-<li>Create an <strong>R markdown</strong> file to generate web pages or pdf documents from your analyses.</li>
+<li>Create a new <strong>R script</strong> to save your commands as you
+go.</li>
+<li>Create an <strong>R markdown</strong> file to generate web pages or
+pdf documents from your analyses.</li>
 </ul>
-<p>Commands can be typed directly into the console, but in order to keep track it’s best to write them into a script as you go (File-&gt;New File-&gt;R Script). From here you can use a shortcut to run the command on the line where your cursor is:</p>
+<p>Commands can be typed directly into the console, but in order to keep
+track it’s best to write them into a script as you go (File-&gt;New
+File-&gt;R Script). From here you can use a shortcut to run the command
+on the line where your cursor is:</p>
 <ul>
-<li><kbd>Alt</kbd> + <kbd>Enter</kbd> to keep the cursor on the same line</li>
+<li><kbd>Alt</kbd> + <kbd>Enter</kbd> to keep the cursor on the same
+line</li>
 <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to move to the next line</li>
 </ul>
-<p>You can also use the <kbd>Tab</kbd> key to autocomplete names of functions and objects as you type them into your script.</p>
-<p><strong>Hint:</strong> When using the console, the Up/Down arrow keys can be use to cycle through previous commands.</p>
-<p>In the console you should always see a <code>&gt;</code> prompt, if you can’t see this R may still be working. There is a red Stop light at the top right of the console when a command is running. If you see a <code>+</code> instead of <code>&gt;</code>, R is waiting for more input. Sometimes this means you have forgotten to close a bracket or quotation.</p>
-<p>Using <strong>R Markdown</strong> is a great way to annotate your code and present it at the end. It’s worth learning but will add a further level of complication for novice users.</p>
+<p>You can also use the <kbd>Tab</kbd> key to autocomplete names of
+functions and objects as you type them into your script.</p>
+<p><strong>Hint:</strong> When using the console, the Up/Down arrow keys
+can be use to cycle through previous commands.</p>
+<p>In the console you should always see a <code>&gt;</code> prompt, if
+you can’t see this R may still be working. There is a red Stop light at
+the top right of the console when a command is running. If you see a
+<code>+</code> instead of <code>&gt;</code>, R is waiting for more
+input. Sometimes this means you have forgotten to close a bracket or
+quotation.</p>
+<p>Using <strong>R Markdown</strong> is a great way to annotate your
+code and present it at the end. It’s worth learning but will add a
+further level of complication for novice users.</p>
 <p><br></p>
 <hr />
 </div>
 <div id="installing-libraries" class="section level2">
 <h2>Installing libraries</h2>
-<p>Libraries provide additional functions in R and can be downloaded from several sources:</p>
+<p>Libraries provide additional functions in R and can be downloaded
+from several sources:</p>
 <ul>
-<li><a href="https://cran.r-project.org/">CRAN</a> is the Comprehensive R Archive Network and hosts the majority of generic R packages.</li>
-<li><a href="https://www.bioconductor.org/">Bioconductor</a> is a repository of biology specific packages.</li>
-<li>Third party tools are often hosted on <a href="https://www.github.com">github</a>.</li>
+<li><a href="https://cran.r-project.org/">CRAN</a> is the Comprehensive
+R Archive Network and hosts the majority of generic R packages.</li>
+<li><a href="https://www.bioconductor.org/">Bioconductor</a> is a
+repository of biology specific packages.</li>
+<li>Third party tools are often hosted on <a
+href="https://www.github.com">github</a>.</li>
 </ul>
-<p>Install the packages we need for these lessons by running the code below in the R console:</p>
+<p>Install the packages we need for these lessons by running the code
+below in the R console:</p>
 <pre class="r"><code># Install from CRAN with install.packages()
 install.packages(c(&quot;magrittr&quot;, &quot;gprofiler2&quot;))
 
 # Install from bioconductor with BiocManager
-if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
+if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE)){
     install.packages(&quot;BiocManager&quot;)
+}
 BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BSgenome.Hsapiens.UCSC.hg19&quot;,&quot;org.Hs.eg.db&quot;,&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;,&quot;biomaRt&quot;,&quot;AnnotationHub&quot;,&quot;BSgenome.Mmusculus.UCSC.mm10&quot;,&quot;ChIPseeker&quot;,&quot;clusterProfiler&quot;))
 
 # Install from github with the devtools package - we don&#39;t need these packages this is just for demonstration.
 #install.packages(&quot;devtools&quot;)
 #devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
-<p>To load a specific package within an R session, use the “library” function:</p>
+<p>To load a specific package within an R session, use the “library”
+function:</p>
 <pre class="r"><code>library(magrittr)</code></pre>
 <hr />
 </div>
 <div id="genomics-file-formats" class="section level2">
 <h2>Genomics file formats</h2>
-<p>We will work with several different genomic datasets including genome sequences, gene models, ChIP-seq peak co-ordinates and aligned sequencing reads. Most of these datasets exist in databases outside of R in standardised text formats. It will be useful to familiarise yourself with these formats and the type of data stored within each.</p>
-<p>In this course we will use Fasta, Bed, wiggle and GFF files. A brief summary of file formats is provided below as well as in this <a href="https://docs.google.com/presentation/d/1WjaovDGr6YF0oHU1b1tJwBBvaqAdxBahOWk72LUrmjc/edit?usp=sharing">presentation</a></p>
+<p>We will work with several different genomic datasets including genome
+sequences, gene models, ChIP-seq peak co-ordinates and aligned
+sequencing reads. Most of these datasets exist in databases outside of R
+in standardised text formats. It will be useful to familiarise yourself
+with these formats and the type of data stored within each.</p>
+<p>In this course we will use Fasta, Bed, wiggle and GFF files. A brief
+summary of file formats is provided below as well as in this <a
+href="https://docs.google.com/presentation/d/1WjaovDGr6YF0oHU1b1tJwBBvaqAdxBahOWk72LUrmjc/edit?usp=sharing">presentation</a></p>
 <div id="fasta" class="section level3">
 <h3><a href="https://en.wikipedia.org/wiki/FASTA_format">Fasta</a></h3>
-<p>Standard format for sequence data (DNA/RNA or protein). Can store multiple sequences separated by unique headers.</p>
+<p>Standard format for sequence data (DNA/RNA or protein). Can store
+multiple sequences separated by unique headers.</p>
 </div>
 <div id="fastq" class="section level3">
 <h3><a href="https://en.wikipedia.org/wiki/FASTQ_format">Fastq</a></h3>
-<p>Fastq is similar to Fasta but is used to store sequencing reads and includes extra lines to encode quality scores.</p>
+<p>Fastq is similar to Fasta but is used to store sequencing reads and
+includes extra lines to encode quality scores.</p>
 </div>
 <div id="bed" class="section level3">
-<h3><a href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1">Bed</a></h3>
-<p>Bed (browser extensible data) files store genomic co-ordinates to represent positions of features such as genes, ChIP-seq peaks or regulatory features (e.g. CpG islands). Bed files have at least 3 columns (chromosome, start, end) to encode regions of the genome.</p>
+<h3><a
+href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1">Bed</a></h3>
+<p>Bed (browser extensible data) files store genomic co-ordinates to
+represent positions of features such as genes, ChIP-seq peaks or
+regulatory features (e.g. CpG islands). Bed files have at least 3
+columns (chromosome, start, end) to encode regions of the genome.</p>
 <ul>
-<li>Bed6 is a strict version of the bed format where each region must have a score, strand and name (chromosome, start, end, name, score, strand).</li>
+<li>Bed6 is a strict version of the bed format where each region must
+have a score, strand and name (chromosome, start, end, name, score,
+strand).</li>
 <li>Bed12 has extra columns to represent exons in gene models.</li>
-<li>There is a binary version of bed called <strong>bigBed</strong>, used to store and visualise large datasets.</li>
+<li>There is a binary version of bed called <strong>bigBed</strong>,
+used to store and visualise large datasets.</li>
 </ul>
 </div>
 <div id="wiggle" class="section level3">
-<h3><a href="https://genome.ucsc.edu/goldenPath/help/wiggle.html">Wiggle</a></h3>
-<p>The wiggle or .wig format is used to represent signals or scores across the genome (e.g. sequencing read depth, GC% etc.). It has four columns (chromosome,start,end, score). There is a binary version called bigWig used to store and visualise large datasets.</p>
+<h3><a
+href="https://genome.ucsc.edu/goldenPath/help/wiggle.html">Wiggle</a></h3>
+<p>The wiggle or .wig format is used to represent signals or scores
+across the genome (e.g. sequencing read depth, GC% etc.). It has four
+columns (chromosome,start,end, score). There is a binary version called
+bigWig used to store and visualise large datasets.</p>
 </div>
 <div id="gffgtf" class="section level3">
-<h3><a href="https://en.wikipedia.org/wiki/General_feature_format">GFF/GTF</a></h3>
-<p>The GFF (general feature format) is used to store rich information on genomic annotations. GTF (gene transfer format) is a derivative of GFF which stores gene transcript models, with detailed information on genetic features such as start codons, alternative transcripts, exons and CDS.</p>
+<h3><a
+href="https://en.wikipedia.org/wiki/General_feature_format">GFF/GTF</a></h3>
+<p>The GFF (general feature format) is used to store rich information on
+genomic annotations. GTF (gene transfer format) is a derivative of GFF
+which stores gene transcript models, with detailed information on
+genetic features such as start codons, alternative transcripts, exons
+and CDS.</p>
 </div>
 <div id="sam" class="section level3">
-<h3><a href="https://samtools.github.io/hts-specs/SAMv1.pdf">SAM</a></h3>
-<p>The SAM (sequence alignment/map) format stores sequencing reads and quality scores as well as detailed information following alignment to a genome/transcriptome. There is a binary version called BAM used to store and visualise large datasets.</p>
+<h3><a
+href="https://samtools.github.io/hts-specs/SAMv1.pdf">SAM</a></h3>
+<p>The SAM (sequence alignment/map) format stores sequencing reads and
+quality scores as well as detailed information following alignment to a
+genome/transcriptome. There is a binary version called BAM used to store
+and visualise large datasets.</p>
 </div>
 <div id="vcf" class="section level3">
-<h3><a href="https://genome.ucsc.edu/goldenPath/help/vcf.html">VCF</a></h3>
-<p>The VCF (variant calling format) is used to store positions of SNPs, INDELs and other genomic variations following variant calling analysis</p>
+<h3><a
+href="https://genome.ucsc.edu/goldenPath/help/vcf.html">VCF</a></h3>
+<p>The VCF (variant calling format) is used to store positions of SNPs,
+INDELs and other genomic variations following variant calling
+analysis</p>
 <br>
 <div class="key-points">
 <h2>
@@ -468,8 +501,12 @@ BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BS
 <li>Install the required libraries</li>
 <li>Open a new R script (or R markdown file for advanced users)</li>
 <li>Be aware of common file formats for genomics data</li>
-<li>It will be best to work with the tutorial and RStudio open together so you can easily switch between the two. Working on a wide split-screen or multiple desktops is the best setup.</li>
-<li>I recommend typing out commands rather than copy-and-pasting if you want to learn. Remember you can use the <kbd>Tab</kbd> key to save on typing!</li>
+<li>It will be best to work with the tutorial and RStudio open together
+so you can easily switch between the two. Working on a wide split-screen
+or multiple desktops is the best setup.</li>
+<li>I recommend typing out commands rather than copy-and-pasting if you
+want to learn. Remember you can use the <kbd>Tab</kbd> key to save on
+typing!</li>
 </ul>
 </div>
 </div>
@@ -504,7 +541,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
