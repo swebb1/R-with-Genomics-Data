@@ -39,6 +39,7 @@ First, let's make sure you have the following datasets from previous lessons:
 ```{r message=FALSE, warning=FALSE}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db)
+options(timeout=600) ## This will increase the time for downloading large files
 
 txdb.gff<-makeTxDbFromGFF(file = "http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Homo_sapiens.GRCh37.74.edited.gtf",format = "gtf",organism = "Homo sapiens")
 ```
@@ -150,7 +151,7 @@ We can also plot this as a heatmap rather than an average profile.
 
 ```{r}
 ##Plot heatmaps of peak distribution across promoter regions
-tagHeatmap(tagMatrixList,nrow=2)
+tagHeatmap(tagMatrixList,xlim = c(-3000,3000))
 ```
 
 With both plots we can see a definite enrichment of ChIP-seq peaks around the TSS in both CBX6 and CBX7.
@@ -193,6 +194,8 @@ AR1<-readPeakFile(peakFiles[[1]])
 CBX.overlap<-annotateWithFeatures(CBX6,GRangesList(CBX7=CBX7,AR1=AR1))
 CBX.overlap
 ```
+
+----
 
 ## 4.6 Statistical testing of overlaps
 

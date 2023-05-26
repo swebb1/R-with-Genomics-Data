@@ -35,6 +35,8 @@ First, let's make sure you have the following datasets from the GenomicRanges le
 ```{r message=FALSE, warning=FALSE}
 library(GenomicRanges)
 library(genomation)
+options(timeout=600) ## This will increase the time for downloading large files
+
 gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
             ranges = IRanges(start = sample(1000000,5) ,
             width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))

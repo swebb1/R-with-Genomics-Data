@@ -13,13 +13,22 @@
 
 <title>Plotting genomic data</title>
 
-<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.15/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -36,11 +45,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -53,32 +57,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -90,10 +69,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -110,40 +85,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 45px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h2 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h3 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h4 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h5 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
-.section h6 {
-  padding-top: 50px;
-  margin-top: -50px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -171,7 +122,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -183,7 +134,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -193,11 +144,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -209,7 +177,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -276,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -305,7 +272,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -315,8 +282,10 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#plot-sequencing-read-profiles-across-genomic-regions">6. Plot sequencing read profiles across genomic regions</a></li>
-<li><a href="#summary">Summary</a></li>
+<li><a href="#plot-sequencing-read-profiles-across-genomic-regions"
+id="toc-plot-sequencing-read-profiles-across-genomic-regions">6. Plot
+sequencing read profiles across genomic regions</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
 </ul>
 </div>
 
@@ -331,16 +300,24 @@ $(document).ready(function () {
 <i class="far fa-check-square"></i> Learning Objectives
 </h2>
 <ul>
-<li>Combine genome annotations in <em>GRanges</em> objects with genomic data in bigWig files</li>
+<li>Combine genome annotations in <em>GRanges</em> objects with genomic
+data in bigWig files</li>
 <li>Plot and visualise sequencing reads around genomic annotations</li>
 </ul>
 </div>
 <p><br></p>
 </div>
-<div id="plot-sequencing-read-profiles-across-genomic-regions" class="section level1">
+<div id="plot-sequencing-read-profiles-across-genomic-regions"
+class="section level1">
 <h1>6. Plot sequencing read profiles across genomic regions</h1>
-<p>A common task in sequencing analysis is to plot profiles of particular signals across regions of interest. For instance ChIP-seq reads across the TSS regions of genes. You’ve probably guessed by now but there are many different ways to do this in R! Here we will introduce <strong>seqplots</strong> which is one of the more intuitive packages.</p>
-<p>First make sure you have the following datasets from previous lessons:</p>
+<p>A common task in sequencing analysis is to plot profiles of
+particular signals across regions of interest. For instance ChIP-seq
+reads across the TSS regions of genes. You’ve probably guessed by now
+but there are many different ways to do this in R! Here we will
+introduce <strong>seqplots</strong> which is one of the more intuitive
+packages.</p>
+<p>First make sure you have the following datasets from previous
+lessons:</p>
 <pre class="r"><code>#library(GenomicRanges)
 #library(genomation)
 #gr2&lt;-GRanges(seqnames = paste0(&quot;chr&quot;,seq(2,10,2)),
@@ -349,14 +326,19 @@ $(document).ready(function () {
 
 #hg19.genes&lt;-readGeneric(&quot;http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed&quot;,chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
 #hg19.pc.genes&lt;-subset(hg19.genes,hg19.genes$biotype==&quot;protein_coding&quot;)</code></pre>
-<p>Load the <strong>seqplots</strong> library and create a list of features using the <em>hg19.pc.genes</em> object.</p>
+<p>Load the <strong>seqplots</strong> library and create a list of
+features using the <em>hg19.pc.genes</em> object.</p>
 <pre class="r"><code>#library(seqplots)
 
 ## First we need to select a set of features to plot over, this could be a set of peak regions, genes or CpG Islands for instance.
 
 ## Here we will use our hg19 protein coding genes 
 #features&lt;-list(genes=hg19.pc.genes)</code></pre>
-<p>Next we need to select the data that we want to plot, these are our tracks. These data are stored in <strong>bigWig</strong> files and represent coverage profiles of aligned reads across a genome. They have four columns: Chromosome, start_position, end_position, score. In this case, the score represents read depth.</p>
+<p>Next we need to select the data that we want to plot, these are our
+tracks. These data are stored in <strong>bigWig</strong> files and
+represent coverage profiles of aligned reads across a genome. They have
+four columns: Chromosome, start_position, end_position, score. In this
+case, the score represents read depth.</p>
 <pre class="r"><code>## Next we have a list of tracks. This is the data we intend to plot. We can supply the file paths of bigWig files directly:
 ##H3K4me3 ChIP-seq read profiles
 #H3K4me3.chip&lt;-&quot;http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K4me3.bw&quot;
@@ -365,7 +347,8 @@ $(document).ready(function () {
 
 ##Combine data into a list of tracks
 #tracks&lt;-list(H3K4me3=H3K4me3.chip,H3K27me3=H3K27me3.chip)</code></pre>
-<p>We build an array of values around the feature using getPlotSetArray(). The variable type has a few options:</p>
+<p>We build an array of values around the feature using
+getPlotSetArray(). The variable type has a few options:</p>
 <ul>
 <li>pf #Point Feature
 <ul>
@@ -382,13 +365,16 @@ $(document).ready(function () {
 <li>af #Anchored Feature
 <ul>
 <li>Align the start and ends of each feature</li>
-<li>Features are normalised to a standard length with the xanchored parameter</li>
+<li>Features are normalised to a standard length with the xanchored
+parameter</li>
 </ul></li>
 </ul>
 <pre class="r"><code>##Calculate the mean values 3kb either side of the TSS in 100b bins
 #gene.array&lt;-getPlotSetArray(tracks=tracks, features=hg19.pc.genes,refgenome = &quot;hg19&quot;,bin = 100,ignore_strand = F,xmin = 3000,xmax=3000,xanchored=3000,type = &quot;af&quot;,stat = &quot;mean&quot;)
 #plotAverage(gene.array,xlab = &quot;Gene&quot;,error.estimates = T,ylab = &quot;Read depth&quot;)</code></pre>
-<p>This is an average plot of ~20000 genes so perhaps not that informative. It may be more interesting to look at different classes of genes, for instance those that are highly or lowly expressed.</p>
+<p>This is an average plot of ~20000 genes so perhaps not that
+informative. It may be more interesting to look at different classes of
+genes, for instance those that are highly or lowly expressed.</p>
 <pre class="r"><code>##Read in gene expression values calculated from RNA-seq data
 #exp&lt;-read.table(&quot;/homes/swebb/data/Shaun/training/ROI_workshop/data/rna-seq_expression.tab&quot;,header=T,sep=&quot;\t&quot;)
 ##Remove genes with no expression: != means not equal to in R.
@@ -407,20 +393,30 @@ $(document).ready(function () {
 #gene.exp.array&lt;-getPlotSetArray(tracks=tracks, features=features2,refgenome = &quot;hg19&quot;,bin = 100,ignore_strand = F,type = &quot;pf&quot;,xmin = 3000,xmax=3000,add_heatmap = T,stat = &quot;mean&quot;)
 
 #plotAverage(gene.exp.array,xlab=&quot;Gene&quot;,ylab=&quot;Read Depth&quot;)</code></pre>
-<p>Now we can see clear differences in Chromatin marks between genes grouped by expression level. We can also use seqplots to create heatmaps.</p>
+<p>Now we can see clear differences in Chromatin marks between genes
+grouped by expression level. We can also use seqplots to create
+heatmaps.</p>
 <pre class="r"><code>#library(RColorBrewer)
 #cols&lt;-brewer.pal(n = 9,name = &quot;Set3&quot;)
 #plotHeatmap(gene.exp.array[c(1,2)],clusters = F)</code></pre>
 </div>
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>This is just a brief tour of some of the packages available for downstream analysis of genomic data. Full documentation is available online for all Bioconductor packages. Please come and see the Bioinformatics Core Facility if you need any help or further training.</p>
+<p>This is just a brief tour of some of the packages available for
+downstream analysis of genomic data. Full documentation is available
+online for all Bioconductor packages. Please come and see the
+Bioinformatics Core Facility if you need any help or further
+training.</p>
 <br>
 <div class="challenge">
 <h2>
 <i class="fas fa-pencil-alt"></i> Challenge:
 </h2>
-<p>Spend the remaining time playing around with the different ggplot options and see if you can create an interesting and appealing visualisation with a dataset of your choice. Use the ggplot cheatsheet or the <a href="https://www.r-graph-gallery.com/index.html">R graph gallery</a> for inspiration!</p>
+<p>Spend the remaining time playing around with the different ggplot
+options and see if you can create an interesting and appealing
+visualisation with a dataset of your choice. Use the ggplot cheatsheet
+or the <a href="https://www.r-graph-gallery.com/index.html">R graph
+gallery</a> for inspiration!</p>
 </div>
 <p><br></p>
 <div class="key-points">
@@ -429,13 +425,16 @@ $(document).ready(function () {
 </h2>
 <ul>
 <li>ggplot2 builds graphics layer upon layer</li>
-<li>Bind a dataset to your ggplot function and map values to visual aesthetics</li>
+<li>Bind a dataset to your ggplot function and map values to visual
+aesthetics</li>
 <li>Apply different geometries to create different graphics</li>
-<li>Use colours, fills, gradients, shapes etc. to represent multiple variables</li>
+<li>Use colours, fills, gradients, shapes etc. to represent multiple
+variables</li>
 <li>Use themes to alter the appearance of a graphic</li>
 <li>Generate sublots with facetting</li>
 <li>Save your graphics with <code>ggsave</code></li>
-<li>There are many additional libraries that extend the functionality of ggplot</li>
+<li>There are many additional libraries that extend the functionality of
+ggplot</li>
 </ul>
 </div>
 <p><br></p>
@@ -468,7 +467,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
