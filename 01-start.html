@@ -416,20 +416,20 @@ href="https://www.github.com">github</a>.</li>
 <p>Install the packages we need for these lessons by running the code
 below in the R console:</p>
 <pre class="r"><code># Install from CRAN with install.packages()
-install.packages(c(&quot;magrittr&quot;, &quot;gprofiler2&quot;))
+install.packages(c(&quot;gprofiler2&quot;,&quot;ggplot2&quot;))
 
 # Install from bioconductor with BiocManager
 if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE)){
     install.packages(&quot;BiocManager&quot;)
 }
-BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BSgenome.Hsapiens.UCSC.hg19&quot;,&quot;org.Hs.eg.db&quot;,&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;,&quot;biomaRt&quot;,&quot;AnnotationHub&quot;,&quot;BSgenome.Mmusculus.UCSC.mm10&quot;,&quot;ChIPseeker&quot;,&quot;clusterProfiler&quot;))
+BiocManager::install(c(&quot;GenomicRanges&quot;,&quot;genomation&quot;,&quot;BSgenome.Hsapiens.UCSC.hg19&quot;,&quot;org.Hs.eg.db&quot;,&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;,&quot;biomaRt&quot;,&quot;AnnotationHub&quot;,&quot;BSgenome.Mmusculus.UCSC.mm10&quot;,&quot;ChIPseeker&quot;,&quot;clusterProfiler&quot;,&quot;profileplyr&quot;,&quot;soGGi&quot;))
 
 # Install from github with the devtools package - we don&#39;t need these packages this is just for demonstration.
 #install.packages(&quot;devtools&quot;)
 #devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <p>To load a specific package within an R session, use the “library”
 function:</p>
-<pre class="r"><code>library(magrittr)</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
 <hr />
 </div>
 <div id="genomics-file-formats" class="section level2">

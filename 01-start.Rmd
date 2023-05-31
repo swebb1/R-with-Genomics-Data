@@ -110,13 +110,13 @@ Install the packages we need for these lessons by running the code below in the 
 ```{r, eval=FALSE}
 
 # Install from CRAN with install.packages()
-install.packages(c("magrittr", "gprofiler2"))
+install.packages(c("gprofiler2","ggplot2"))
 
 # Install from bioconductor with BiocManager
 if (!requireNamespace("BiocManager", quietly = TRUE)){
     install.packages("BiocManager")
 }
-BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19","org.Hs.eg.db","TxDb.Hsapiens.UCSC.hg19.knownGene","biomaRt","AnnotationHub","BSgenome.Mmusculus.UCSC.mm10","ChIPseeker","clusterProfiler"))
+BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19","org.Hs.eg.db","TxDb.Hsapiens.UCSC.hg19.knownGene","biomaRt","AnnotationHub","BSgenome.Mmusculus.UCSC.mm10","ChIPseeker","clusterProfiler","profileplyr","soGGi"))
 
 # Install from github with the devtools package - we don't need these packages this is just for demonstration.
 #install.packages("devtools")
@@ -127,7 +127,7 @@ BiocManager::install(c("GenomicRanges","genomation","BSgenome.Hsapiens.UCSC.hg19
 To load a specific package within an R session, use the "library" function:
 
 ```{r eval=F}
-library(magrittr)
+library(ggplot2)
 ```
 
 ----
