@@ -264,6 +264,9 @@ $(document).ready(function () {
 <li>
   <a href="04-annotation.html">Annotating genomic regions</a>
 </li>
+<li>
+  <a href="05-plots.html">Plotting genomic data</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -346,11 +349,11 @@ gr2</code></pre>
 <pre><code>## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr2 665928-666427      + |         1
-##   [2]     chr4   13221-13720      + |         2
-##   [3]     chr6 502656-503155      + |         3
-##   [4]     chr8 256519-257018      - |         4
-##   [5]    chr10 875617-876116      - |         5
+##   [1]     chr2 158938-159437      + |         1
+##   [2]     chr4 806933-807432      + |         2
+##   [3]     chr6 146026-146525      + |         3
+##   [4]     chr8 633427-633926      - |         4
+##   [5]    chr10 157195-157694      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <p>We can store several <em>GRanges</em> objects in a
@@ -378,11 +381,11 @@ gl</code></pre>
 ## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
-##   [1]     chr2 665928-666427      + |         1
-##   [2]     chr4   13221-13720      + |         2
-##   [3]     chr6 502656-503155      + |         3
-##   [4]     chr8 256519-257018      - |         4
-##   [5]    chr10 875617-876116      - |         5
+##   [1]     chr2 158938-159437      + |         1
+##   [2]     chr4 806933-807432      + |         2
+##   [3]     chr6 146026-146525      + |         3
+##   [4]     chr8 633427-633926      - |         4
+##   [5]    chr10 157195-157694      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <hr />
@@ -404,9 +407,9 @@ seqnames(gr)</code></pre>
 ## Levels(3): chr2 chr6 chr10</code></pre>
 <pre class="r"><code>## Get the start and end positions or the strand
 start(gr2)</code></pre>
-<pre><code>## [1] 665928  13221 502656 256519 875617</code></pre>
+<pre><code>## [1] 158938 806933 146026 633427 157195</code></pre>
 <pre class="r"><code>end(gr2)</code></pre>
-<pre><code>## [1] 666427  13720 503155 257018 876116</code></pre>
+<pre><code>## [1] 159437 807432 146525 633926 157694</code></pre>
 <pre class="r"><code>strand(gr2)</code></pre>
 <pre><code>## factor-Rle of length 5 with 2 runs
 ##   Lengths: 3 2
@@ -469,11 +472,11 @@ c(gr,gr2)</code></pre>
 ##    [3]     chr6       300-400      * |         3      0.50
 ##    [4]     chr6       350-500      * |         4      0.25
 ##    [5]    chr10       500-600      * |         5      0.00
-##    [6]     chr2 665928-666427      + |         1        NA
-##    [7]     chr4   13221-13720      + |         2        NA
-##    [8]     chr6 502656-503155      + |         3        NA
-##    [9]     chr8 256519-257018      - |         4        NA
-##   [10]    chr10 875617-876116      - |         5        NA
+##    [6]     chr2 158938-159437      + |         1        NA
+##    [7]     chr4 806933-807432      + |         2        NA
+##    [8]     chr6 146026-146525      + |         3        NA
+##    [9]     chr8 633427-633926      - |         4        NA
+##   [10]    chr10 157195-157694      - |         5        NA
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <pre class="r"><code>## Subset a GRanges object
@@ -481,8 +484,8 @@ subset(gr2,strand(gr2)==&quot;-&quot;)</code></pre>
 <pre><code>## GRanges object with 2 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr8 256519-257018      - |         4
-##   [2]    chr10 875617-876116      - |         5
+##   [1]     chr8 633427-633926      - |         4
+##   [2]    chr10 157195-157694      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <pre class="r"><code>## Split GRanges into a GRangesList
@@ -571,7 +574,7 @@ subset(grc,seqnames(grc)==&quot;chr2&quot;)</code></pre>
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt; &lt;numeric&gt;
 ##   [1]     chr2       100-200      * |         1      1.00
 ##   [2]     chr2       150-300      * |         2      0.75
-##   [3]     chr2 665928-666427      + |         1        NA
+##   [3]     chr2 158938-159437      + |         1        NA
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 </div>
@@ -592,11 +595,11 @@ promoters(gr2,upstream = 1000,downstream=1000)</code></pre>
 <pre><code>## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr2 664928-666927      + |         1
-##   [2]     chr4   12221-14220      + |         2
-##   [3]     chr6 501656-503655      + |         3
-##   [4]     chr8 256019-258018      - |         4
-##   [5]    chr10 875117-877116      - |         5
+##   [1]     chr2 157938-159937      + |         1
+##   [2]     chr4 805933-807932      + |         2
+##   [3]     chr6 145026-147025      + |         3
+##   [4]     chr8 632927-634926      - |         4
+##   [5]    chr10 156695-158694      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <pre class="r"><code>## Reduce overlapping ranges into a single range
@@ -699,11 +702,11 @@ promoters(gl)</code></pre>
 ## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
-##   [1]     chr2 663928-666127      + |         1
-##   [2]     chr4   11221-13420      + |         2
-##   [3]     chr6 500656-502855      + |         3
-##   [4]     chr8 256819-259018      - |         4
-##   [5]    chr10 875917-878116      - |         5
+##   [1]     chr2 156938-159137      + |         1
+##   [2]     chr4 804933-807132      + |         2
+##   [3]     chr6 144026-146225      + |         3
+##   [4]     chr8 633727-635926      - |         4
+##   [5]    chr10 157495-159694      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 <p><em>GRangesList</em> objects also work with base R list functions
@@ -732,11 +735,11 @@ To</a> document.</p>
 <pre><code>## GRanges object with 5 ranges and 1 metadata column:
 ##       seqnames        ranges strand |     names
 ##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;
-##   [1]     chr2 666428-667427      + |         1
-##   [2]     chr4   13721-14720      + |         2
-##   [3]     chr6 503156-504155      + |         3
-##   [4]     chr8 255519-256518      - |         4
-##   [5]    chr10 874617-875616      - |         5
+##   [1]     chr2 159438-160437      + |         1
+##   [2]     chr4 807433-808432      + |         2
+##   [3]     chr6 146526-147525      + |         3
+##   [4]     chr8 632427-633426      - |         4
+##   [5]    chr10 156195-157194      - |         5
 ##   -------
 ##   seqinfo: 5 sequences from an unspecified genome; no seqlengths</code></pre>
 </div>
