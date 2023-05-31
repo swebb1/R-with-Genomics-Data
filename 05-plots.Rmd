@@ -31,115 +31,160 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 
 # 6. Plot sequencing read profiles across genomic regions
 
-A common task in sequencing analysis is to plot profiles of particular signals across regions of interest. For instance ChIP-seq reads across the TSS regions of genes. You've probably guessed by now but there are many different ways to do this in R! Here we will introduce **seqplots** which is one of the more intuitive packages. 
+A common task in sequencing analysis is to plot profiles of particular signals across regions of interest. For instance ChIP-seq reads across the TSS regions of genes. You've probably guessed by now but there are many different ways to do this in R! Here we will introduce **soGGi** which is one of the more intuitive packages. 
 
 First make sure you have the following datasets from previous lessons:
 
 ```{r}
-#library(GenomicRanges)
-#library(genomation)
-#gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
-#            ranges = IRanges(start = sample(1000000,5) ,
-#            width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))
+library(GenomicRanges)
+library(genomation)
 
-#hg19.genes<-readGeneric("http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed",chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
-#hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
-```
-
-Load the **seqplots** library and create a list of features using the *hg19.pc.genes* object.
-
-```{r}
-#library(seqplots)
-
-## First we need to select a set of features to plot over, this could be a set of peak regions, genes or CpG Islands for instance.
-
-## Here we will use our hg19 protein coding genes 
-#features<-list(genes=hg19.pc.genes)
+hg19.genes<-readGeneric("http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed",chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
+hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
 ```
 
 Next we need to select the data that we want to plot, these are our tracks. These data are stored in **bigWig** files and represent coverage profiles of aligned reads across a genome. They have four columns: Chromosome, start_position, end_position, score. In this case, the score represents read depth.
 
 ```{r}
-## Next we have a list of tracks. This is the data we intend to plot. We can supply the file paths of bigWig files directly:
-##H3K4me3 ChIP-seq read profiles
-#H3K4me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K4me3.bw"
-##H3K27me3 ChIP-seq read profiles
-#H3K27me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/training/ROI_workshop/data/H3K27me3.bw"
+## This is the data we intend to plot. We can supply the file paths of bigWig files directly:
+## H3K4me3 ChIP-seq read profiles
+H3K4me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/Shaun/training/ROI_workshop/data/H3K4me3.bw"
+## H3K27me3 ChIP-seq read profiles
+H3K27me3.chip<-"http://bifx-core.bio.ed.ac.uk/Shaun/Shaun/training/ROI_workshop/data/H3K27me3.bw"
 
-##Combine data into a list of tracks
-#tracks<-list(H3K4me3=H3K4me3.chip,H3K27me3=H3K27me3.chip)
 ```  
-  
-We build an array of values around the feature using getPlotSetArray(). The variable type has a few options:
 
-* pf #Point Feature
-    + Align the start of each feature e.g. TSS
-* ef #End Feature
-    + Align the end of each feature e.g TES
-* mf #Midpoint Feature
-    + Align the midpoints of each feature
-* af #Anchored Feature
-    + Align the start and ends of each feature
-    + Features are normalised to a standard length with the xanchored parameter
+----
 
-  
-```{r}
-##Calculate the mean values 3kb either side of the TSS in 100b bins
-#gene.array<-getPlotSetArray(tracks=tracks, features=hg19.pc.genes,refgenome = "hg19",bin = 100,ignore_strand = F,xmin = 3000,xmax=3000,xanchored=3000,type = "af",stat = "mean")
-#plotAverage(gene.array,xlab = "Gene",error.estimates = T,ylab = "Read depth")
-```
+## 6.1 Average profile plots with soGGi
 
-This is an average plot of ~20000 genes so perhaps not that informative. It may be more interesting to look at different classes of genes, for instance those that are highly or lowly expressed.
+Load the *soGGi* library and run the **regionPlot** function for each track.
 
 ```{r}
-##Read in gene expression values calculated from RNA-seq data
-#exp<-read.table("/homes/swebb/data/Shaun/training/ROI_workshop/data/rna-seq_expression.tab",header=T,sep="\t")
-##Remove genes with no expression: != means not equal to in R.
-#exp<-subset(exp,exp$Expression.tpm!=0)
-##Order by expression and take the top 2000 gene IDs
-#high<-exp[order(exp$Expression.tpm,decreasing = T),][1:2000,"geneID"]
-#low<-exp[order(exp$Expression.tpm,decreasing = F),][1:2000, "geneID"]
+library(soGGi)
 
-##Subset the GRanges objects 
-#high.gr<-subset(hg19.pc.genes,hg19.pc.genes$name %in% high)
-#low.gr<-subset(hg19.pc.genes,hg19.pc.genes$name %in% low)
+## The regionPlot function creates a matrix of binned scores across genomic regions. It works with BAM files and bigwig files. Here, we supply a bigWig file and our hg19 protein coding genes.
 
-##Create a new features list
-#features2<-list(high=high.gr,low=low.gr)
-##Generate a new array. This time we will just plot around the TSS.
-#gene.exp.array<-getPlotSetArray(tracks=tracks, features=features2,refgenome = "hg19",bin = 100,ignore_strand = F,type = "pf",xmin = 3000,xmax=3000,add_heatmap = T,stat = "mean")
+rp <- regionPlot(bamFile = H3K4me3.chip,testRanges = hg19.pc.genes,format = "bigwig",style = "percentOfRegion")
 
-#plotAverage(gene.exp.array,xlab="Gene",ylab="Read Depth")
+rp2 <- regionPlot(bamFile = H3K27me3.chip,testRanges = hg19.pc.genes,format = "bigwig",style = "percentOfRegion")
 ```
 
-Now we can see clear differences in Chromatin marks between genes grouped by expression level. We can also use seqplots to create heatmaps.
+Take a look at the `rp` object. This is a special class of object called ChIPprofile which contains the GRanges, scores and metadata.
 
 ```{r}
-#library(RColorBrewer)
-#cols<-brewer.pal(n = 9,name = "Set3")
-#plotHeatmap(gene.exp.array[c(1,2)],clusters = F)
+rp
 ```
 
-# Summary
+We can now plot the regions as an average profile plot.
 
-This is just a brief tour of some of the packages available for downstream analysis of genomic data. Full documentation is available online for all Bioconductor packages. Please come and see the Bioinformatics Core Facility if you need any help or further training.
+```{r}
+## Concatenate the chipProfile objects into a single object
+rps <- c(rp,rp2)
+## Plot the chpProfiles
+plotRegion(rps,colourBy = "Sample")
+```
 
-<br>
-<div class="challenge">
-<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
-Spend the remaining time playing around with the different ggplot options and see if you can create an interesting and appealing visualisation with a dataset of your choice. Use the ggplot cheatsheet or the [R graph gallery](https://www.r-graph-gallery.com/index.html) for inspiration!
+The output is a ggplot object. This means we can customise the output further with ggplot functions. For instance we can change the theme.
+
+```{r}
+library(ggplot2)
+plotRegion(rps,colourBy = "Sample")+theme_bw()
+```
+
+
+<div class="resources">
+<h2><i class="fas fa-book"></i> Further Learning</h2>
+The [*soGGi*](https://www.bioconductor.org/packages/release/bioc/vignettes/soGGi/inst/doc/soggi.pdf) package has many more customisation options for plotting average profiles. Take a look through the tutorial to see how you can adjust the regions to plot, the flank sizes, number of windows and smoothing options.
 </div>
 <br>
+
+----
+
+## 6.2 Heatmaps with profileplyr
+
+The *profileplyr* package has many functions for importing, manipulating and visualising score matrices like the ones we created in soGGi. 
+
+```{r}
+library(profileplyr)
+
+## convert chipProfile object to profileplyr object
+pp <- as_profileplyr(rps)
+
+## pipe profileplyr object to enrichedHeatmap
+pp |> generateEnrichedHeatmap()
+```
+  
+<div class="resources">
+<h2><i class="fas fa-book"></i> Further Learning</h2>
+The [*profileplyr*](https://www.bioconductor.org/packages/release/bioc/vignettes/profileplyr/inst/doc/profileplyr.html) package leverages many Bioconductor packages to make it easy to manipulate and visualise profile data. It also works with packages outside of R like *deepTools*.
+</div>
+<br>
+  
+----
+
+## 6.3 Grouping genes in heatmaps
+
+We can group genes to plot them separately. We are going to plot our histone modification data based on high and low expression of genes from RNA-seq data.
+
+```{r}
+## R ead in gene expression values calculated from RNA-seq data
+exp<-read.table("http://bifx-core.bio.ed.ac.uk/Shaun/Shaun/training/ROI_workshop/data/rna-seq_expression.tab",header=T,sep="\t")
+
+## Remove genes with no expression: != means not equal to in R.
+exp<-subset(exp,exp$Expression.tpm!=0)
+
+## Order by expression and take the top 2000 gene IDs
+high<-exp[order(exp$Expression.tpm,decreasing = T),][1:2000,"geneID"]
+low<-exp[order(exp$Expression.tpm,decreasing = F),][1:2000, "geneID"]
+
+## Create a list of high and low expressed gene names
+exp_list = list(high = high, low = low)
+```
+
+We can now use the **groupBy** function in *profileplyr* to group these genes together in plots. Grouping can be performed with gene IDs, as we have done here, and also by overlapping ranges or clustering. See the *profileplyr* manual for more examples.
+
+```{r}
+## By default, profileplyr expects our ranges to have a column called SYMBOL. This doesn't exist in our data so we are going to copy from the gene names column. This is the quickest way to do this in this tutorial, but there are other methods.
+pp@rowRanges$SYMBOL = pp@rowRanges$names
+
+## group by the genes in out expression list
+pp |> groupBy(group = exp_list) |> generateEnrichedHeatmap()
+```
+
+We can also pipe the **profileplyr** functions to create average profile plots similar to the ones created by *soGGi*.
+
+```{r}
+pp |> groupBy(group = exp_list) |> generateProfilePlot()
+```
+
+----
+
+# 7. Other Bioconductor packages
+
+In the remaining time, have a look at some of the other Bioconductor packages available and see if you can follow their tutorials. Here are a few ideas:
+
+* Genome browser plotting and visualisation
+    * [Karyoploter](http://bioconductor.org/packages/release/bioc/html/karyoploteR.html)
+    * [GViz](https://bioconductor.org/packages/release/bioc/html/Gviz.html)
+* Average profile and heatmap plots
+    * [EnrichedHeatmap](https://bioconductor.org/packages/release/bioc/html/EnrichedHeatmap.html)
+    * [soGGi](https://bioconductor.org/packages/release/bioc/html/soGGi.html)
+    * [profileplyr](https://www.bioconductor.org/packages/release/bioc/html/profileplyr.html)
+* Sequence alignment logos
+    * [seqlogo](https://bioconductor.org/packages/release/bioc/vignettes/seqLogo/inst/doc/seqLogo.html)
+* HiC data analysis
+    * [HiCbricks](https://www.bioconductor.org/packages/release/bioc/html/HiCBricks.html)
+    * [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html)
+* RNA-seq differential expression
+    * [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
+* Methylation analysis
+    * [methylKit](https://www.bioconductor.org/packages/release/bioc/vignettes/methylKit/inst/doc/methylKit.html)
 
 <div class="key-points">
 <h2><i class="fas fa-thumbtack"></i> Key points</h2>
- * ggplot2 builds graphics layer upon layer
- * Bind a dataset to your ggplot function and map values to visual aesthetics
- * Apply different geometries to create different graphics
- * Use colours, fills, gradients, shapes etc. to represent multiple variables
- * Use themes to alter the appearance of a graphic
- * Generate sublots with facetting
- * Save your graphics with `ggsave`
- * There are many additional libraries that extend the functionality of ggplot
+ * Bioconductor has a large library of packages for analysing and visualising genomic datasets.
 </div>
 <br>
+
+
