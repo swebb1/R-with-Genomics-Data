@@ -422,7 +422,7 @@ RNA-seq data.</p>
 exp&lt;-read.table(&quot;http://bifx-core.bio.ed.ac.uk/Shaun/Shaun/training/ROI_workshop/data/rna-seq_expression.tab&quot;,header=T,sep=&quot;\t&quot;)
 
 ## Remove genes with no expression: != means not equal to in R.
-exp&lt;-subset(exp,exp$Expression.tpm!=0)
+exp&lt;-subset(exp,Expression.tpm!=0)
 
 ## Order by expression and take the top 2000 gene IDs
 high&lt;-exp[order(exp$Expression.tpm,decreasing = T),][1:2000,&quot;geneID&quot;]

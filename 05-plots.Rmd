@@ -132,7 +132,7 @@ We can group genes to plot them separately. We are going to plot our histone mod
 exp<-read.table("http://bifx-core.bio.ed.ac.uk/Shaun/Shaun/training/ROI_workshop/data/rna-seq_expression.tab",header=T,sep="\t")
 
 ## Remove genes with no expression: != means not equal to in R.
-exp<-subset(exp,exp$Expression.tpm!=0)
+exp<-subset(exp,Expression.tpm!=0)
 
 ## Order by expression and take the top 2000 gene IDs
 high<-exp[order(exp$Expression.tpm,decreasing = T),][1:2000,"geneID"]

@@ -108,8 +108,8 @@ width(gr)
 The *GRanges* object also contains metadata columns with additional information about each genomic interval. We can assign and retrieve metadata with the *mcols* function.
 
 ```{r message=FALSE, warning=FALSE}
-## Create a new metadata column to represent GC content
-mcols(gr)$GC<-seq(1,0,length=length(gr))
+## Create a new column to represent GC content
+gr$GC<-seq(1,0,length=length(gr))
 ## Fetch the metadata columns as a DataFrame
 mcols(gr)
 ```
@@ -171,7 +171,7 @@ split(gr,seqnames(gr))
 </h2>
 
 ```{r}
-gr_subset=subset(gr,mcols(gr)$GC>=0.5)
+gr_subset=subset(gr,GC>=0.5)
 split(gr_subset,seqnames(gr_subset))
 ```
 :::
@@ -386,7 +386,7 @@ We can use the metadata to filter our GRanges object using the *subset* function
 
 ```{r}
 ##Get all protein coding genes
-hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
+hg19.pc.genes<-subset(hg19.genes,biotype=="protein_coding")
 hg19.pc.genes
 ```
 

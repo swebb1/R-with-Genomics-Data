@@ -42,7 +42,7 @@ gr2<-GRanges(seqnames = paste0("chr",seq(2,10,2)),
             width = rep(500,5)),strand = c(rep("+",3),rep("-",2)),names=seq(1,5))
 
 hg19.genes<-readGeneric("http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed",chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
-hg19.pc.genes<-subset(hg19.genes,hg19.genes$biotype=="protein_coding")
+hg19.pc.genes<-subset(hg19.genes,biotype=="protein_coding")
 ```
 
 ----

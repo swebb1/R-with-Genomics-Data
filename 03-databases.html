@@ -331,7 +331,7 @@ gr2&lt;-GRanges(seqnames = paste0(&quot;chr&quot;,seq(2,10,2)),
             width = rep(500,5)),strand = c(rep(&quot;+&quot;,3),rep(&quot;-&quot;,2)),names=seq(1,5))
 
 hg19.genes&lt;-readGeneric(&quot;http://bifx-core.bio.ed.ac.uk/genomes/human/hg19/annotation/Ensembl.GRCh37.74.edited.genes.bed&quot;,chr = 1,start = 2,end = 3,strand = 6,meta.cols = list(name=4,symbol=5,biotype=7))
-hg19.pc.genes&lt;-subset(hg19.genes,hg19.genes$biotype==&quot;protein_coding&quot;)</code></pre>
+hg19.pc.genes&lt;-subset(hg19.genes,biotype==&quot;protein_coding&quot;)</code></pre>
 <hr />
 <div id="genomic-sequences-bsgenome" class="section level2">
 <h2>3.1 Genomic sequences (<em>BSgenome</em>)</h2>
@@ -352,19 +352,19 @@ gr2.seq&lt;-getSeq(hs,gr2)
 gr2.seq</code></pre>
 <pre><code>## DNAStringSet object of length 5:
 ##     width seq
-## [1]   500 GAAACAGGTGACTTGTGTCATACATAACTGGTTC...CAGGTTGGGGTTACGTGGCTCTACGGAACAGGC
-## [2]   500 CCGTGCTTCTCTCATGACAAAGCTTCACTCAGGA...TGCAAAATAGAAATAAGAGGCTTAATCCTCACA
-## [3]   500 GGAGACTGAGGCAGGAGGATGGCTTGAACCCAGA...AGGTATGTCTTTATCAGCAGCATGAAAATGGAC
-## [4]   500 CACAGCACTGAAGTCGTAGATGACCCCTTTCATG...ATCATACATATCAGCCTTCAAGGAATGTCTACC
-## [5]   500 GATGAGGAACATATTGGGAACTGGTCTAAAGGTC...AAAAAATGGTTGTGTGGGCCAGGTCCAGGACCC</code></pre>
+## [1]   500 TAAGTACCTAAGGGTAAAGTGGCCTGATGGCTCC...AGAGCTGACAAGCTGGCCCTGTGGGCATTTATT
+## [2]   500 CCTGTTGTCTAGTGAATTAGTAACTTTCTTTAAT...CCCTCCCTGCACAAGCACCCCCACCGCGGCTCT
+## [3]   500 ATGTGCCAGTGCGGCCACCCAAACCATGCCCCTC...TTAGAATAAAAAATTCCACAATTGTCAAAGAAG
+## [4]   500 TAATTGTTTGATCCCCTTCGCCCATATGGCCCAA...CCTTGAAAATGTTAGGTTGTTTGCTTGATCACA
+## [5]   500 ACCTGCAGCGAGGTCTGTGAACCCGTCTCAGGTT...CCAAGGTGTCGGACACCGTGGTGGAGCCCTACA</code></pre>
 <pre class="r"><code>## Calculate the dinucleotide frequencies for each sequence
 dinucleotideFrequency(gr2.seq)</code></pre>
 <pre><code>##      AA AC AG AT CA CC CG CT GA GC GG GT TA TC TG TT
-## [1,] 42 37 31 32 46 17 14 27 24 30 59 24 30 21 32 33
-## [2,] 32 26 34 31 44 39  1 49 22 27 23 26 26 40 40 39
-## [3,] 34 26 29 40 39 42  3 37 34 17 30 26 22 37 44 39
-## [4,] 51 25 44 43 54 21  5 26 32 24 21 19 26 36 26 46
-## [5,] 60 20 47 36 40 23  0 28 43 27 30 20 20 22 42 41</code></pre>
+## [1,] 75 39 45 27 50 20  3 26 37 22 34 24 24 18 35 20
+## [2,] 61 23 35 20 29 34 19 41 23 33 33 29 26 32 31 30
+## [3,] 44 24 28 35 39 38  7 35 20 20 18 35 27 37 41 51
+## [4,] 18 25 20 25 36 67  9 49 18 24 28 33 17 45 46 39
+## [5,] 17 35 31 14 32 36 19 45 35 29 59 36 13 32 50 16</code></pre>
 <p>All <em>BSgenome</em> databases contain a <em>seqinfo</em> object
 that describes the genome. We can add this information to any of our
 GRanges objects.</p>
@@ -445,11 +445,11 @@ seqinfo(hg19.pc.genes)</code></pre>
 </h2>
 <pre class="r"><code>letterFrequency(gr2.seq,letters = &quot;GC&quot;,as.prob = T)</code></pre>
 <pre><code>##        G|C
-## [1,] 0.484
-## [2,] 0.462
-## [3,] 0.458
-## [4,] 0.406
-## [5,] 0.424</code></pre>
+## [1,] 0.432
+## [2,] 0.482
+## [3,] 0.426
+## [4,] 0.528
+## [5,] 0.582</code></pre>
 </div>
 </details>
 2.Attempt to translate the sequences in <em>gr2.seq</em> into amino acid
@@ -464,11 +464,11 @@ sequences using the <em>Biostrings</em> package.
 <pre class="r"><code>translate(gr2.seq)</code></pre>
 <pre><code>## AAStringSet object of length 5:
 ##     width seq
-## [1]   166 ETGDLCHT*LVH*T*VPEIPGVCNMTKATFSPNS...PHGYGTGWGYLAIEQAGATRLWNRLGLRGSTEQ
-## [2]   166 PCFSHDKASLRNCAESTSASRVFH**AT*VPRRL...ACWKSGFYEFKAKFLGVVIVNVNAK*K*EA*SS
-## [3]   166 GD*GRRMA*TQSSRLQ*AMTTPLHSFLTDRERSY...RPPQPCGTVSSLNLFFFINYPVSGMSLSAA*KW
-## [4]   166 HSTEVVDDPFHEILQWEAVICNEAIMLAQWSRRL...NCSFRLLAIMSIIHFSQVPDGAESYISAFKECL
-## [5]   166 DEEHIGNWSKGHTCYALPKTMVALCPSPRDL*NF...MSPGHVRDLHSSPFHHRPGGLRGKNGCVGQVQD</code></pre>
+## [1]   166 *VPKGKVA*WLQLTLK*SEKIICTCTKRHEERWT...SHG*GTRPLTDTKGVP*GVTAAAELTSWPCGHL
+## [2]   166 PVV**ISNFL*SLSFFLWFARYKLYFCYTSGYKM...RETLSQKKKKKKKKSPKSL*VCAPPCTSTPTAA
+## [3]   166 MCQCGHPNHAPPRGPSPSSAGPPPMSSVVLIITP...GQF*KLFLSKNILFSF*HMKLIH*NKKFHNCQR
+## [4]   166 *LFDPLRPYGPK*PSPS*IPPGLWFLLFHLPRCS...PSFGTAPCESG*VPSRLWALV*PLENVRLFA*S
+## [5]   166 TCSEVCEPVSGLTPVLIPNRGSCCPVTLGEGVSS...SAQ*DPGGVPRQDHKHIQHPALAQGVGHRGGAL</code></pre>
 <p>Because the gr2 regions are randomly selected they don’t really
 represent transcripts. You may end up with an error if there are Ns in
 your sequences. You can use the <em>if.fuzzy.codon</em> argument to
@@ -476,11 +476,11 @@ solve this.</p>
 <pre class="r"><code>translate(gr2.seq,if.fuzzy.codon = &quot;solve&quot;)</code></pre>
 <pre><code>## AAStringSet object of length 5:
 ##     width seq
-## [1]   166 ETGDLCHT*LVH*T*VPEIPGVCNMTKATFSPNS...PHGYGTGWGYLAIEQAGATRLWNRLGLRGSTEQ
-## [2]   166 PCFSHDKASLRNCAESTSASRVFH**AT*VPRRL...ACWKSGFYEFKAKFLGVVIVNVNAK*K*EA*SS
-## [3]   166 GD*GRRMA*TQSSRLQ*AMTTPLHSFLTDRERSY...RPPQPCGTVSSLNLFFFINYPVSGMSLSAA*KW
-## [4]   166 HSTEVVDDPFHEILQWEAVICNEAIMLAQWSRRL...NCSFRLLAIMSIIHFSQVPDGAESYISAFKECL
-## [5]   166 DEEHIGNWSKGHTCYALPKTMVALCPSPRDL*NF...MSPGHVRDLHSSPFHHRPGGLRGKNGCVGQVQD</code></pre>
+## [1]   166 *VPKGKVA*WLQLTLK*SEKIICTCTKRHEERWT...SHG*GTRPLTDTKGVP*GVTAAAELTSWPCGHL
+## [2]   166 PVV**ISNFL*SLSFFLWFARYKLYFCYTSGYKM...RETLSQKKKKKKKKSPKSL*VCAPPCTSTPTAA
+## [3]   166 MCQCGHPNHAPPRGPSPSSAGPPPMSSVVLIITP...GQF*KLFLSKNILFSF*HMKLIH*NKKFHNCQR
+## [4]   166 *LFDPLRPYGPK*PSPS*IPPGLWFLLFHLPRCS...PSFGTAPCESG*VPSRLWALV*PLENVRLFA*S
+## [5]   166 TCSEVCEPVSGLTPVLIPNRGSCCPVTLGEGVSS...SAQ*DPGGVPRQDHKHIQHPALAQGVGHRGGAL</code></pre>
 </div>
 </details>
 </div>

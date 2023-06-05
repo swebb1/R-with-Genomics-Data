@@ -137,7 +137,7 @@ data("tagMatrixList")
 
 ```
 
-We can now plot out the matrix to see the average profile of peaks around promoter regions. The *conf* and *
+We can now plot out the matrix to see the average profile of peaks around promoter regions.
 
 ```{r}
 ## Plot average profiles of peak distribution across promoter regions
